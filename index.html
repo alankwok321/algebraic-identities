@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Identities 恆等式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Patrick+Hand&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<script>try{document.documentElement.dataset.lang=(localStorage.getItem('ids-lang')==='en'?'en':'zh')}catch(e){document.documentElement.dataset.lang='zh'}</script>
+<style>
+/* A classroom page: paper for teaching text, a chalkboard stage for animated working, an exercise book for written lines. a-terms are blue, b-terms orange, ab-pieces purple — the same colours everywhere. */
+:root{
+  --paper:#EEF3F0; --surface:#FFFFFF; --ink:#18241F; --muted:#56675F; --line:#D2DDD7;
+  --board:#1D3A31; --board-2:#244639; --chalk:#EEF3EA; --chalk-dim:#A8BEB3;
+  --hl:#F4C24E; --pen:#C3384A; --ok:#2B8452; --accent:#226B57; --accent-soft:#DCEBE4;
+  --ca:#1F5FC4; --cb:#C2610F; --cab:#7448C2;
+  --fa:#D6E4FA; --fb:#FBE3CC; --fab:#E6DCF7; --fn:#E4ECE7;
+  --f-display:"Bricolage Grotesque","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","PingFang HK","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --f-chalk:"Patrick Hand","PingFang HK","Microsoft JhengHei",cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0F1513; --surface:#17201C; --ink:#E3ECE7; --muted:#93A69D; --line:#2A3832;
+  --board:#16302A; --board-2:#1C3B32; --pen:#F07487; --ok:#5DC48B; --accent:#6CC1A6; --accent-soft:#1D332B;
+  --ca:#82B6FF; --cb:#FFAE66; --cab:#B89BFF; --fa:#1C3050; --fb:#4A3018; --fab:#33284F; --fn:#23302B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F1513; --surface:#17201C; --ink:#E3ECE7; --muted:#93A69D; --line:#2A3832;
+  --board:#16302A; --board-2:#1C3B32; --pen:#F07487; --ok:#5DC48B; --accent:#6CC1A6; --accent-soft:#1D332B;
+  --ca:#82B6FF; --cb:#FFAE66; --cab:#B89BFF; --fa:#1C3050; --fb:#4A3018; --fab:#33284F; --fn:#23302B; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1000px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+[hidden]{display:none!important}
+.m{font-family:var(--f-math)}
+.m i,.mi{font-style:italic}
+sup{font-size:.62em;vertical-align:super;line-height:0}
+.ca{color:var(--ca);font-weight:600}
+.cb{color:var(--cb);font-weight:600}
+.cab{color:var(--cab);font-weight:600}
+.hlm{background:var(--hl);color:#1d1a10;border-radius:5px;padding:0 4px}
+.muted{color:var(--muted)}
+
+/* header + tabs */
+.top{padding-block:28px 18px;display:grid;gap:8px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.top h1{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-.01em}
+.toprow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .ids{font-family:var(--f-math);font-size:clamp(17px,2.6vw,22px);display:flex;flex-wrap:wrap;gap:6px 22px;color:var(--muted)}
+.tabs{position:sticky;top:0;z-index:5;background:var(--paper);display:flex;gap:6px;padding-block:10px;border-bottom:1px solid var(--line);overflow-x:auto;align-items:center}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.tab b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.tab[aria-selected="true"] b{background:var(--surface);color:var(--accent)}
+.lang{margin-left:auto;display:inline-flex;flex:none;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:3px;gap:2px}
+.lang button{border:0;background:transparent;border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px;color:var(--muted);white-space:nowrap}
+.lang button[aria-checked="true"]{background:var(--ink);color:var(--paper)}
+.panel{padding-block:24px;display:grid;gap:40px}
+
+/* sections & cards */
+.sec{display:grid;gap:14px}
+.sec h2{font-size:clamp(22px,3.4vw,28px);font-weight:800}
+.sec h2 .no{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:16px;margin-right:10px;vertical-align:3px}
+.sec > p{max-width:68ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.two,.three{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px;min-width:0}
+.card h3{font-size:17px}
+.big{font-family:var(--f-math);font-size:clamp(20px,3.2vw,26px)}
+.tag{font-size:13px;color:var(--muted)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:700;font-size:15px}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.analogy{border-left:4px solid var(--hl);padding:4px 0 4px 14px;color:var(--muted)}
+
+/* models */
+.model{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:center}
+@media (max-width:760px){.model{grid-template-columns:1fr}}
+.model svg{width:100%;max-width:420px;margin:0 auto;display:block;overflow:visible}
+svg text{font-family:var(--f-math);dominant-baseline:central;text-anchor:middle;fill:var(--ink)}
+svg text.it{font-style:italic}
+.pc{stroke:var(--surface);stroke-width:2;transition:fill .5s,stroke .5s,opacity .5s}
+.pa{fill:var(--fa)} .pb{fill:var(--fb)} .pab{fill:var(--fab)} .pn{fill:var(--fn)}
+.pcut{fill:#F7D4D9} .pok{fill:#CFEBDB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pcut{fill:#4D2229}:root:not([data-theme="light"]) .pok{fill:#1D4430}}
+:root[data-theme="dark"] .pcut{fill:#4D2229} :root[data-theme="dark"] .pok{fill:#1D4430}
+.pghost{fill:url(#hatch);stroke:var(--pen);stroke-width:2;stroke-dasharray:6 4}
+.pwarn{stroke:var(--pen);stroke-width:3}
+.pmiss{fill:transparent;stroke:var(--pen);stroke-width:2;stroke-dasharray:7 5}
+.mv{transition:transform .9s cubic-bezier(.6,.05,.25,1),opacity .6s;transform-box:fill-box;transform-origin:0 0}
+.fade{transition:opacity .5s}
+.dim line{stroke:var(--muted);stroke-width:1.4}
+.dim text{font-size:17px;fill:var(--muted);font-style:italic}
+.lbl{font-size:20px;pointer-events:none}
+.lbl.sm{font-size:14px;fill:var(--muted)}
+.cutline{stroke:var(--pen);stroke-width:2.5;stroke-dasharray:8 6;transition:opacity .5s}
+.side{display:grid;gap:12px}
+.ro{display:grid;gap:6px;font-family:var(--f-math);font-size:19px}
+.ro .row{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ro .ok{color:var(--ok);font-family:var(--f-body);font-weight:700;font-size:15px}
+.ro .bad{color:var(--pen);font-family:var(--f-body);font-weight:700;font-size:15px}
+.sl{display:grid;grid-template-columns:auto 1fr 2ch;gap:10px;align-items:center;font-family:var(--f-math);font-size:18px}
+.sl input{width:100%;accent-color:var(--accent)}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper .count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+.formula-out{font-family:var(--f-math);font-size:clamp(20px,3.4vw,26px);min-height:1.6em}
+.formula-out .pop{animation:pop .5s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.note{font-size:15px;min-height:3em}
+
+/* box method */
+.grid2{display:grid;grid-template-columns:56px repeat(2,minmax(0,1fr));gap:4px;max-width:340px;font-family:var(--f-math);font-size:22px;text-align:center}
+.grid2 > div{min-height:56px;display:grid;place-items:center;border-radius:8px}
+.grid2 .h{background:transparent;font-weight:600}
+.grid2 .c{background:var(--fn);transition:background .4s}
+.grid2 .c span{opacity:0;transform:scale(.6);transition:opacity .35s,transform .35s}
+.grid2 .c.on span{opacity:1;transform:none}
+.grid2 .c.a2{background:var(--fa)} .grid2 .c.b2{background:var(--fb)} .grid2 .c.ab{background:var(--fab)}
+.strike{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--pen);opacity:.6}
+
+/* identity summary */
+.idcard{border-top:5px solid var(--accent)}
+.idcard .big{font-size:clamp(19px,2.6vw,24px)}
+.idcard.i0{border-top-color:var(--ca)} .idcard.i1{border-top-color:var(--cb)} .idcard.i2{border-top-color:var(--cab)}
+.mnem{font-family:var(--f-chalk);font-size:20px;color:var(--accent)}
+
+/* tester */
+.tester{width:100%;border-collapse:collapse;font-size:15px}
+.tester th,.tester td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.tester th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tester td.m{font-size:19px;white-space:nowrap}
+.tester td.v{font-variant-numeric:tabular-nums;font-family:var(--f-math);font-size:18px}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--pen);font-weight:700}
+.nums{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-family:var(--f-math);font-size:20px}
+.nums input{width:5.5em;font:inherit;font-size:18px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.scroll{overflow-x:auto}
+
+/* mistakes */
+.mist{display:grid;gap:12px}
+.mist > div{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-family:var(--f-math);font-size:20px}
+.mist .x{color:var(--pen);text-decoration:line-through;text-decoration-thickness:2px}
+.mist .y{color:var(--ok)}
+.mist small{font-family:var(--f-body);font-size:14px;color:var(--muted);flex-basis:100%}
+
+/* decision */
+.flow{display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.flow li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+.flow li::before{content:attr(data-n);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700}
+.flow .big{font-size:20px}
+
+/* board */
+.board{background:radial-gradient(120% 90% at 20% 0%,var(--board-2),var(--board));color:var(--chalk);border-radius:16px;padding:16px 18px;border:6px solid #6b4f33;display:grid;gap:12px;box-shadow:inset 0 0 40px rgb(0 0 0 / .25)}
+.board .ca{color:#8CC4FF}.board .cb{color:#FFB673}.board .cab{color:#C9B2FF}
+.tpl{display:flex;flex-wrap:wrap;gap:6px}
+.tpl span.ch{font-family:var(--f-math);font-size:14px;border:1px solid rgb(255 255 255 / .2);border-radius:8px;padding:3px 8px;color:var(--chalk-dim);transition:all .4s}
+.tpl span.ch.on span{color:inherit!important}
+.tpl span.ch.on{background:var(--hl);color:#1d1a10;border-color:var(--hl)}
+.board-q{font-family:var(--f-chalk);font-size:20px;color:var(--chalk-dim);line-height:1.3}
+.stage{font-family:var(--f-math);font-size:clamp(24px,5.4vw,40px);min-height:2.6em;display:grid;place-items:center;text-align:center;overflow-x:auto;padding:6px 0}
+.stage > div{white-space:nowrap}
+.stage .in{animation:chalkIn .6s ease-out}
+@keyframes chalkIn{from{opacity:0;transform:translateY(10px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+.board-note{font-family:var(--f-chalk);font-size:21px;color:var(--hl);text-align:center;min-height:1.4em}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctrl .count{margin-left:auto;font-size:14px;color:var(--chalk-dim);font-variant-numeric:tabular-nums}
+.bbtn{border:1px solid rgb(255 255 255 / .25);background:rgb(255 255 255 / .08);color:var(--chalk);border-radius:10px;padding:8px 14px;font-weight:700;font-size:15px}
+.bbtn:hover:not(:disabled){background:rgb(255 255 255 / .16)}
+.bbtn.go{background:var(--hl);color:#1d1a10;border-color:var(--hl)}
+.bbtn:disabled{opacity:.35;cursor:not-allowed}
+.lesson{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.lesson{grid-template-columns:1fr}}
+.col{display:grid;gap:14px;min-width:0}
+.why{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:6px}
+.why h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.why p{font-size:17px}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.pick{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:10px;min-height:48px}
+.pick .lb{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.pick .f{font-family:var(--f-math);font-size:18px}
+.pick[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+
+/* exercise book */
+.book{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 18px;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 45px,var(--line) 45px 46px);background-position:0 10px}
+.book h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-family:var(--f-body)}
+.book ol{list-style:none;margin:0;padding:0;display:grid}
+.book li{min-height:46px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2px 12px;font-family:var(--f-math);font-size:21px;color:#2a47a8;padding:4px 0}
+.book li .ca{color:#1F5FC4}.book li .cb{color:#C2610F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .book li{color:#9fb6ff}:root:not([data-theme="light"]) .book li .ca{color:#82B6FF}:root:not([data-theme="light"]) .book li .cb{color:#FFAE66}}
+:root[data-theme="dark"] .book li{color:#9fb6ff}:root[data-theme="dark"] .book li .ca{color:#82B6FF}:root[data-theme="dark"] .book li .cb{color:#FFAE66}
+.book .wn{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.book li.new{animation:inkIn .6s ease-out}
+@keyframes inkIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.book .empty{color:var(--muted);font-family:var(--f-body);font-size:14px}
+
+/* practice */
+.levels{display:flex;flex-wrap:wrap;gap:8px}
+.lv{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 14px;text-align:left;display:grid}
+.lv b{font-size:15px} .lv span{font-size:13px;color:var(--muted)}
+.lv[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.lv[aria-pressed="true"] span{color:var(--surface);opacity:.85}
+.prog{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dot{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-weight:700;font-variant-numeric:tabular-nums}
+.dot.done{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.dot.done.retry{background:var(--hl);border-color:var(--hl);color:#1d1a10}
+.dot[aria-current="true"]{box-shadow:0 0 0 3px var(--hl)}
+.score{margin-left:auto;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qhead{font-family:var(--f-math);font-size:clamp(24px,4.4vw,34px)}
+.qtext{font-weight:700;font-size:15px;color:var(--muted)}
+.ask{font-weight:700;font-size:17px}
+.stepno{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.opts{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+@media (max-width:620px){.opts{grid-template-columns:1fr}}
+.opt{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;min-height:56px}
+.opt .f{font-family:var(--f-math);font-size:20px}
+.opt .k{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-family:var(--f-body)}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.bad{border-color:var(--pen);animation:shake .35s;opacity:.7}
+.opt.bad .k{background:var(--pen);color:var(--surface)}
+.opt.good{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.opt.good .k{background:var(--ok);color:var(--surface)}
+.opt:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.fb{min-height:1.5em;font-size:16px}
+.fb.bad{color:var(--pen);font-family:var(--f-chalk);font-size:20px;line-height:1.3}
+.fb.ok{color:var(--ok);font-weight:700}
+.hint{background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:15px}
+.answer{border:2px solid var(--ok);border-radius:14px;padding:14px 18px;display:grid;gap:6px;background:var(--surface)}
+.answer .w{font-family:var(--f-math);font-size:22px}
+.answer b{color:var(--ok)}
+.qcard{display:grid;gap:14px}
+
+/* language */
+:root:not([data-lang="zh"]) .t-zh{display:none!important}
+:root[data-lang="zh"] .t-en{display:none!important}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="toprow"><div class="eyebrow"><span class="t-en">S2 Mathematics · Number &amp; Algebra</span><span class="t-zh">中二數學 · 數與代數</span></div>
+      <div class="lang" role="radiogroup" aria-label="Language 語言">
+      <button role="radio" data-lang="en" aria-checked="false">EN</button>
+      <button role="radio" data-lang="zh" aria-checked="true">中文</button>
+    </div>
+    </div>
+    <h1><span class="t-en">Identities</span><span class="t-zh">恆等式 Identities</span></h1>
+    <div class="ids m" id="topIds"></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Lesson parts">
+    <button class="tab" role="tab" data-tab="learn" aria-selected="true"><b>1</b><span class="t-en">Learn</span><span class="t-zh">概念</span></button>
+    <button class="tab" role="tab" data-tab="examples" aria-selected="false"><b>2</b><span class="t-en">Worked examples</span><span class="t-zh">例題</span></button>
+    <button class="tab" role="tab" data-tab="practice" aria-selected="false"><b>3</b><span class="t-en">Practice</span><span class="t-zh">練習</span></button>
+  </nav>
+
+  <!-- ================= LEARN ================= -->
+  <section class="panel" id="learn" role="tabpanel">
+
+    <div class="sec">
+      <h2><span class="no">0</span><span class="t-en">Identity or equation?</span><span class="t-zh">恆等式還是方程？</span></h2>
+      <div class="two">
+        <div class="card">
+          <div class="big m" id="idEx"></div>
+          <p><span class="t-en">An <b>identity</b> (≡) is true for <b>every</b> value of the letters.</span><span class="t-zh"><b>恆等式</b> (identity, ≡) 對字母的<b>所有</b>數值都成立。</span></p>
+        </div>
+        <div class="card">
+          <div class="big m" id="eqEx"></div>
+          <p><span class="t-en">An <b>equation</b> (=) is true only for <b>some</b> values — here only <i class="mi">x</i> = 3.</span><span class="t-zh"><b>方程</b> (equation, =) 只對<b>某些</b>數值成立 — 這裏只有 <i class="mi">x</i> = 3。</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- (a+b)^2 area model -->
+    <div class="sec">
+      <h2><span class="no">1</span><span class="t-en">Why (a + b)² has a 2ab</span><span class="t-zh">為甚麼 (a + b)² 有 2ab</span></h2>
+      <p><span class="t-en">Draw a square with side <i class="mi">a</i> + <i class="mi">b</i>. Its area is (<i class="mi">a</i> + <i class="mi">b</i>)². Split it and count the pieces.</span><span class="t-zh">畫一個邊長為 <i class="mi">a</i> + <i class="mi">b</i> 的正方形，面積是 (<i class="mi">a</i> + <i class="mi">b</i>)²。把它分割，數一數有甚麼部分。</span></p>
+      <div class="card model">
+        <svg id="sqA" viewBox="0 0 380 370" role="img" aria-label="Square of side a plus b split into a squared, two ab rectangles and b squared"></svg>
+        <div class="side">
+          <div class="sl"><span><i class="mi ca">a</i> =</span><input type="range" id="sa" min="1" max="9" value="3" aria-label="a"><b id="saV">3</b></div>
+          <div class="sl"><span><i class="mi cb">b</i> =</span><input type="range" id="sb" min="1" max="6" value="2" aria-label="b"><b id="sbV">2</b></div>
+          <div class="btnrow">
+            <button class="btn primary" id="aSplit" aria-pressed="false"><span class="t-en">Split the square</span><span class="t-zh">分割正方形</span></button>
+            <button class="btn" id="aMiss" aria-pressed="false"><span class="t-en">Show only a² + b²</span><span class="t-zh">只顯示 a² + b²</span></button>
+          </div>
+          <div class="ro" id="aRo"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- box method -->
+    <div class="sec">
+      <h2><span class="no">2</span><span class="t-en">Prove it by expanding</span><span class="t-zh">用展開來證明</span></h2>
+      <p><span class="t-en">Multiply every term in the first bracket by every term in the second. Pick an identity and watch the table fill.</span><span class="t-zh">把第一個括號的每一項乘以第二個括號的每一項。選一條恆等式，看看表格怎樣填滿。</span></p>
+      <div class="card">
+        <div class="btnrow" id="boxPick"></div>
+        <div class="two" style="align-items:center">
+          <div class="grid2" id="boxGrid"></div>
+          <div class="ro" id="boxOut" style="font-size:21px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- (a-b)^2 -->
+    <div class="sec">
+      <h2><span class="no">3</span><span class="t-en">(a − b)²: cut two strips off</span><span class="t-zh">(a − b)²：剪去兩條長條</span></h2>
+      <p><span class="t-en">Start with an <i class="mi">a</i> × <i class="mi">a</i> square and cut away strips of width <i class="mi">b</i> until a square of side <i class="mi">a</i> − <i class="mi">b</i> is left.</span><span class="t-zh">由 <i class="mi">a</i> × <i class="mi">a</i> 的正方形開始，剪去闊 <i class="mi">b</i> 的長條，直至剩下邊長 <i class="mi">a</i> − <i class="mi">b</i> 的正方形。</span></p>
+      <div class="card model">
+        <svg id="sqB" viewBox="0 0 400 380" role="img" aria-label="Cutting strips of width b from a square of side a"></svg>
+        <div class="side">
+          <div class="formula-out" id="bF"></div>
+          <p class="note" id="bN"></p>
+          <div class="stepper">
+            <button class="btn" id="bPrev">◀</button>
+            <button class="btn primary" id="bNext"><span class="t-en">Next step</span><span class="t-zh">下一步</span> ▶</button>
+            <span class="count" id="bC"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- a^2-b^2 -->
+    <div class="sec">
+      <h2><span class="no">4</span><span class="t-en">a² − b²: cut and slide</span><span class="t-zh">a² − b²：剪開再移動</span></h2>
+      <p><span class="t-en">Cut a small <i class="mi">b</i> × <i class="mi">b</i> square out of an <i class="mi">a</i> × <i class="mi">a</i> square. Rearrange what is left into one rectangle.</span><span class="t-zh">從 <i class="mi">a</i> × <i class="mi">a</i> 的正方形剪去一個 <i class="mi">b</i> × <i class="mi">b</i> 的小正方形，再把剩下的部分拼成一個長方形。</span></p>
+      <div class="card model">
+        <svg id="sqC" viewBox="0 0 400 340" role="img" aria-label="A squared minus b squared rearranged into an a plus b by a minus b rectangle"></svg>
+        <div class="side">
+          <div class="formula-out" id="cF"></div>
+          <p class="note" id="cN"></p>
+          <div class="stepper">
+            <button class="btn" id="cPrev">◀</button>
+            <button class="btn primary" id="cNext"><span class="t-en">Next step</span><span class="t-zh">下一步</span> ▶</button>
+            <span class="count" id="cC"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- summary -->
+    <div class="sec">
+      <h2><span class="no">5</span><span class="t-en">The three identities</span><span class="t-zh">三條恆等式</span></h2>
+      <div class="three" id="sumCards"></div>
+      <p class="mnem">首平方，尾平方，首尾相乘兩倍放中央 <span class="t-en muted" style="font-family:var(--f-body);font-size:15px">— square the first, square the last, twice their product in the middle.</span></p>
+    </div>
+
+    <!-- which identity -->
+    <div class="sec">
+      <h2><span class="no">6</span><span class="t-en">Which identity? Or none?</span><span class="t-zh">用哪一條？還是都不適用？</span></h2>
+      <div class="two">
+        <div class="card">
+          <h3><span class="t-en">Expanding</span><span class="t-zh">展開 (expand)</span></h3>
+          <ol class="flow">
+            <li data-n="1"><span><span class="t-en">One bracket, squared? → <b>perfect square</b>. Check the sign inside.</span><span class="t-zh">一個括號的平方？→ <b>完全平方</b> (perfect square)。看括號內的符號。</span><br><span class="big m" id="fl1"></span></span></li>
+            <li data-n="2"><span><span class="t-en">Two brackets, same two terms, one + and one −? → <b>difference of two squares</b>.</span><span class="t-zh">兩個括號，兩項相同，一個 + 一個 −？→ <b>平方差</b> (difference of two squares)。</span><br><span class="big m" id="fl2"></span></span></li>
+            <li data-n="3"><span><span class="t-en">Anything else → no identity. Expand term by term.</span><span class="t-zh">其他 → 不適用，逐項展開。</span><br><span class="big m" id="fl3"></span></span></li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3><span class="t-en">Factorising (identity backwards)</span><span class="t-zh">因式分解 (factorise)：倒轉使用恆等式</span></h3>
+          <ol class="flow">
+            <li data-n="1"><span><span class="t-en">3 terms, first and last are squares, middle = ±2ab → perfect square.</span><span class="t-zh">三項，首尾都是平方，中間項 = ±2ab → 完全平方。</span><br><span class="big m" id="fr1"></span></span></li>
+            <li data-n="2"><span><span class="t-en">square − square → difference of two squares.</span><span class="t-zh">平方 − 平方 → 平方差。</span><br><span class="big m" id="fr2"></span></span></li>
+            <li data-n="3"><span><span class="t-en">square + square → <b>cannot</b> be factorised.</span><span class="t-zh">平方 + 平方 → <b>不能</b>因式分解。</span><br><span class="big m" id="fr3"></span></span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- tester -->
+    <div class="sec">
+      <h2><span class="no">7</span><span class="t-en">Test it with numbers</span><span class="t-zh">代入數字驗證</span></h2>
+      <p><span class="t-en">An identity works for <b>all</b> values. One pair of numbers that fails is enough to prove a statement is <b>not</b> an identity.</span><span class="t-zh">恆等式對<b>所有</b>數值都成立。只要找到一組數令等式不成立，就證明它<b>不是</b>恆等式。</span></p>
+      <div class="card">
+        <div class="nums"><label><i class="mi ca">a</i> = <input type="number" id="ta" value="3" step="1"></label><label><i class="mi cb">b</i> = <input type="number" id="tb" value="2" step="1"></label>
+          <button class="btn" id="tRand"><span class="t-en">Random</span><span class="t-zh">隨機</span> 🎲</button></div>
+        <div class="scroll"><table class="tester"><thead><tr><th><span class="t-en">Statement</span><span class="t-zh">式子</span></th><th><span class="t-en">Left</span><span class="t-zh">左方</span></th><th><span class="t-en">Right</span><span class="t-zh">右方</span></th><th></th></tr></thead><tbody id="tBody"></tbody></table></div>
+        <p class="tag" id="tTip"></p>
+      </div>
+    </div>
+
+    <!-- mistakes -->
+    <div class="sec">
+      <h2><span class="no">8</span><span class="t-en">Common mistakes</span><span class="t-zh">常見錯誤</span></h2>
+      <div class="card"><div class="mist" id="mist"></div></div>
+    </div>
+  </section>
+
+  <!-- ================= EXAMPLES ================= -->
+  <section class="panel" id="examples" role="tabpanel" hidden>
+    <div class="sec">
+      <h2><span class="t-en">Worked examples</span><span class="t-zh">例題</span></h2>
+      <div class="picker" id="exPick"></div>
+    </div>
+    <div class="lesson">
+      <div class="col">
+        <div class="board">
+          <div class="tpl" id="exTpl"></div>
+          <div class="board-q" id="exQ"></div>
+          <div class="stage" id="exStage"></div>
+          <div class="board-note" id="exNote"></div>
+          <div class="ctrl">
+            <button class="bbtn" id="exBack">◀ <span class="t-en">Back</span><span class="t-zh">上一步</span></button>
+            <button class="bbtn go" id="exNext"><span class="t-en">Next</span><span class="t-zh">下一步</span> ▶</button>
+            <button class="bbtn" id="exAgain">↺ <span class="t-en">Replay</span><span class="t-zh">重播</span></button>
+            <span class="count" id="exCount"></span>
+          </div>
+        </div>
+        <div class="why"><h3><span class="t-en">Why this step?</span><span class="t-zh">為甚麼這樣做？</span></h3><p id="exWhy"></p></div>
+      </div>
+      <div class="book"><h3><span class="t-en">Working</span><span class="t-zh">步驟</span></h3><ol id="exBook"></ol></div>
+    </div>
+  </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section class="panel" id="practice" role="tabpanel" hidden>
+    <div class="sec">
+      <h2><span class="t-en">Practice</span><span class="t-zh">練習</span></h2>
+      <p><span class="t-en">Choose each step. A wrong choice tells you which mistake you made.</span><span class="t-zh">逐步選擇。選錯時會告訴你犯了甚麼錯誤。</span></p>
+      <div class="levels" id="levels"></div>
+      <div class="prog" id="prog"></div>
+    </div>
+    <div class="lesson">
+      <div class="card qcard" id="qcard"></div>
+      <div class="book"><h3><span class="t-en">Your working</span><span class="t-zh">你的步驟</span></h3><ol id="pBook"></ol></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(()=>{
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const L=(en,zh)=>`<span class="t-en">${en}</span><span class="t-zh">${zh}</span>`;
+const LL=t=>Array.isArray(t)?L(t[0],t[1]):t;
+const SVGNS='http://www.w3.org/2000/svg';
+
+/* Maths mini-markup: letters italic, ^n superscript, «a-term» blue, ‹b-term› orange, ⟪ab⟫ purple, ⟦highlight⟧ */
+function M(s){
+  let h=String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  h=h.replace(/[A-Za-z]/g,m=>`<i>${m}</i>`);
+  h=h.replace(/\^(\d+)/g,'<sup>$1</sup>');
+  h=h.replace(/(\d) (?=\d{3}\b)/g,'$1 ');
+  h=h.replace(/«/g,'<span class="ca">').replace(/‹/g,'<span class="cb">').replace(/⟪/g,'<span class="cab">').replace(/⟦/g,'<span class="hlm">').replace(/[»›⟫⟧]/g,'</span>');
+  return `<span class="m">${h}</span>`;
+}
+const X=t=>typeof t==='string'?M(t):LL(t);
+
+/* ---------- language & tabs ---------- */
+function setLang(l){const r=document.documentElement;r.dataset.lang=l;r.lang=l==='zh'?'zh-HK':'en';
+  try{localStorage.setItem('ids-lang',l)}catch(e){}
+  $$('.lang button').forEach(b=>b.setAttribute('aria-checked',b.dataset.lang===l));}
+$$('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+setLang(document.documentElement.dataset.lang==='en'?'en':'zh');
+$$('.tab').forEach(t=>t.onclick=()=>{
+  $$('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+  $$('.panel').forEach(p=>p.hidden=p.id!==t.dataset.tab);
+  window.scrollTo({top:Math.min(window.scrollY,$('.tabs').offsetTop),behavior:reduce?'auto':'smooth'});
+});
+
+const IDS=['(«a» + ‹b›)^2 ≡ «a»^2 + 2⟪ab⟫ + ‹b›^2','(«a» − ‹b›)^2 ≡ «a»^2 − 2⟪ab⟫ + ‹b›^2','(«a» + ‹b›)(«a» − ‹b›) ≡ «a»^2 − ‹b›^2'];
+const IDP=['(a + b)^2 ≡ a^2 + 2ab + b^2','(a − b)^2 ≡ a^2 − 2ab + b^2','(a + b)(a − b) ≡ a^2 − b^2'];
+$('#topIds').innerHTML=IDS.map(M).join('');
+$('#idEx').innerHTML=M('2(x + 1) ≡ 2x + 2');
+$('#eqEx').innerHTML=M('2x + 1 = 7');
+
+/* ---------- 1. (a+b)^2 area model ---------- */
+const svgA=$('#sqA');
+function el(tag,attrs,parent){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+svgA.innerHTML=`<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="transparent"/><line x1="0" y1="0" x2="0" y2="8" stroke="var(--pen)" stroke-width="2" opacity=".5"/></pattern></defs>`;
+const gA=el('g',{transform:'translate(44,40)'},svgA);
+const A={a:3,b:2,split:false,miss:false,S:290,G:18};
+const pcsA=['aa','ab1','ab2','bb'].map(id=>{const g=el('g',{class:'mv'},gA);const r=el('rect',{class:'pc'},g);const t=el('text',{class:'lbl'},g);const t2=el('text',{class:'lbl sm'},g);return {id,g,r,t,t2};});
+const dimA=el('g',{class:'dim'},gA);
+function dimLine(par,x1,y1,x2,y2,label,cls){
+  const g=el('g',{},par);el('line',{x1,y1,x2,y2},g);
+  const vert=x1===x2; const tk=5;
+  if(vert){el('line',{x1:x1-tk,y1,x2:x1+tk,y2:y1},g);el('line',{x1:x1-tk,y1:y2,x2:x1+tk,y2},g);}
+  else{el('line',{x1,y1:y1-tk,x2:x1,y2:y1+tk},g);el('line',{x1:x2,y1:y2-tk,x2,y2:y2+tk},g);}
+  const t=el('text',{x:vert?x1-9:(x1+x2)/2,y:vert?(y1+y2)/2:y1-14},g);if(vert)t.style.textAnchor='end';t.innerHTML=label;if(cls)t.setAttribute('class',cls);return g;}
+function drawA(){
+  const {a,b,S,G}=A,u=S/(a+b),pa=a*u,pb=b*u,g=A.split?G:0;
+  const spec={aa:[0,0,pa,pa,0,0,'pa','a²',a*a],ab1:[pa,0,pb,pa,g,0,'pab','ab',a*b],ab2:[0,pa,pa,pb,0,g,'pab','ab',a*b],bb:[pa,pa,pb,pb,g,g,'pb','b²',b*b]};
+  pcsA.forEach(p=>{const [x,y,w,h,dx,dy,cls,lab,val]=spec[p.id];
+    Object.entries({x,y,width:w,height:h}).forEach(([k,v])=>p.r.setAttribute(k,v));
+    const miss=A.miss&&cls==='pab';
+    p.r.setAttribute('class','pc '+(miss?'pmiss':cls));
+    p.g.style.transform=`translate(${dx}px,${dy}px)`;
+    const fs=Math.max(11,Math.min(22,Math.min(w,h)/2.6));
+    p.t.setAttribute('x',x+w/2);p.t.setAttribute('y',y+h/2-(Math.min(w,h)>46?fs*.45:0));p.t.style.fontSize=fs+'px';
+    p.t.innerHTML=lab.replace(/([ab])/g,'<tspan font-style="italic">$1</tspan>').replace('²','<tspan baseline-shift="super" font-size="65%">2</tspan>');
+    p.t.style.fill=miss?'var(--pen)':cls==='pa'?'var(--ca)':cls==='pb'?'var(--cb)':'var(--cab)';
+    p.t2.setAttribute('x',x+w/2);p.t2.setAttribute('y',y+h/2+fs*.62);p.t2.textContent=Math.min(w,h)>46?'= '+val:'';p.t2.style.fontSize=Math.max(11,fs*.68)+'px';
+  });
+  dimA.innerHTML='';
+  dimLine(dimA,0,-8,pa,-8,'a','ca');dimLine(dimA,pa+g,-8,pa+g+pb,-8,'b','cb');
+  dimLine(dimA,-10,0,-10,pa,'a','ca');dimLine(dimA,-10,pa+g,-10,pa+g+pb,'b','cb');
+  $$('text',dimA).forEach(t=>t.style.fill=t.getAttribute('class')==='ca'?'var(--ca)':'var(--cb)');
+  const s=a+b;
+  $('#aRo').innerHTML=
+   `<div class="row">${M(`(«a» + ‹b›)^2 = («${a}» + ‹${b}›)^2 = ${s}^2 = ${s*s}`)}</div>`+
+   `<div class="row">${M(`«a»^2 + 2⟪ab⟫ + ‹b›^2 = ${a*a} + ${2*a*b} + ${b*b} = ${s*s}`)} <span class="ok">✓ ${L('same','相等')}</span></div>`+
+   `<div class="row">${M(`«a»^2 + ‹b›^2 = ${a*a} + ${b*b} = ${a*a+b*b}`)} <span class="bad">✗ ${L(`short by 2ab = ${2*a*b}`,`少了 2ab = ${2*a*b}`)}</span></div>`;
+}
+$('#sa').oninput=e=>{A.a=+e.target.value;$('#saV').textContent=A.a;drawA();};
+$('#sb').oninput=e=>{A.b=+e.target.value;$('#sbV').textContent=A.b;drawA();};
+$('#aSplit').onclick=e=>{A.split=!A.split;e.currentTarget.setAttribute('aria-pressed',A.split);drawA();};
+$('#aMiss').onclick=e=>{A.miss=!A.miss;e.currentTarget.setAttribute('aria-pressed',A.miss);if(A.miss&&!A.split){A.split=true;$('#aSplit').setAttribute('aria-pressed',true);}drawA();};
+drawA();
+
+/* ---------- 2. box method ---------- */
+const BOX=[
+ {name:IDP[0],r:['«a»','+ ‹b›'],c:['«a»','+ ‹b›'],cells:[['«a»^2','a2'],['+ ⟪ab⟫','ab'],['+ ⟪ab⟫','ab'],['+ ‹b›^2','b2']],
+  out:['(«a» + ‹b›)^2 = («a» + ‹b›)(«a» + ‹b›)','= «a»^2 + ⟪ab⟫ + ⟪ab⟫ + ‹b›^2','= «a»^2 + 2⟪ab⟫ + ‹b›^2']},
+ {name:IDP[1],r:['«a»','− ‹b›'],c:['«a»','− ‹b›'],cells:[['«a»^2','a2'],['− ⟪ab⟫','ab'],['− ⟪ab⟫','ab'],['+ ‹b›^2','b2']],
+  out:['(«a» − ‹b›)^2 = («a» − ‹b›)(«a» − ‹b›)','= «a»^2 − ⟪ab⟫ − ⟪ab⟫ + ‹b›^2','= «a»^2 − 2⟪ab⟫ + ‹b›^2'],
+  note:['(−b) × (−b) = +b², so the last term is positive.','(−b) × (−b) = +b²，所以最後一項是正數。']},
+ {name:IDP[2],r:['«a»','+ ‹b›'],c:['«a»','− ‹b›'],cells:[['«a»^2','a2'],['− ⟪ab⟫','ab'],['+ ⟪ab⟫','ab'],['− ‹b›^2','b2']],
+  out:['(«a» + ‹b›)(«a» − ‹b›)','= «a»^2 <s>− ⟪ab⟫ + ⟪ab⟫</s> − ‹b›^2','= «a»^2 − ‹b›^2'],
+  note:['−ab and +ab cancel — no middle term!','−ab 與 +ab 互相抵消 — 沒有中間項！']}];
+let boxT=[];
+function runBox(i){
+  boxT.forEach(clearTimeout);boxT=[];
+  $$('#boxPick .btn').forEach((b,j)=>b.setAttribute('aria-pressed',i===j));
+  const B=BOX[i],g=$('#boxGrid');
+  g.innerHTML=`<div class="h">×</div>`+B.c.map(c=>`<div class="h">${M(c)}</div>`).join('')+
+    B.r.map((r,ri)=>`<div class="h">${M(r)}</div>`+[0,1].map(ci=>{const [t,k]=B.cells[ri*2+ci];return `<div class="c" data-k="${k}"><span>${M(t)}</span></div>`;}).join('')).join('');
+  const out=$('#boxOut');out.innerHTML='';
+  const cells=$$('.c',g);const d=reduce?0:550;
+  cells.forEach((c,j)=>boxT.push(setTimeout(()=>{c.classList.add('on',c.dataset.k);},d*(j+1))));
+  B.out.forEach((ln,j)=>boxT.push(setTimeout(()=>{
+    const div=document.createElement('div');div.className='row';
+    div.innerHTML=M(ln).replace(/&lt;s>/g,'<span class="strike">').replace(/&lt;\/s>/g,'</span>');
+    div.style.animation=reduce?'':'pop .5s ease-out';out.appendChild(div);
+    if(j===B.out.length-1&&B.note){const n=document.createElement('p');n.className='tag';n.style.fontFamily='var(--f-body)';n.innerHTML=LL(B.note);out.appendChild(n);}
+  },d*(5+j*1.4))));
+}
+$('#boxPick').innerHTML=BOX.map((b,i)=>`<button class="btn" aria-pressed="false">${M(b.name.split(' ≡')[0])}</button>`).join('');
+$$('#boxPick .btn').forEach((b,i)=>b.onclick=()=>runBox(i));
+runBox(0);
+
+/* ---------- stepper helper for animated models ---------- */
+function stepper(pref,n,render){
+  let s=0;const go=k=>{s=Math.max(0,Math.min(n-1,k));render(s);$('#'+pref+'C').textContent=`${s+1} / ${n}`;
+    $('#'+pref+'Prev').disabled=s===0;$('#'+pref+'Next').disabled=s===n-1;};
+  $('#'+pref+'Prev').onclick=()=>go(s-1);$('#'+pref+'Next').onclick=()=>go(s+1);go(0);}
+function setF(id,s){const e=$(id);e.innerHTML=`<span class="pop">${s}</span>`;}
+
+/* ---------- 3. (a-b)^2 ---------- */
+(()=>{const svg=$('#sqB');const U=40,a=6,b=2,P=(a-b)*U,Q=b*U,AA=a*U,MV=70;
+  const g=el('g',{transform:'translate(52,44)'},svg);
+  const outline=el('rect',{x:0,y:0,width:AA,height:AA,fill:'none',stroke:'var(--muted)','stroke-width':1.5,'stroke-dasharray':'4 4'},g);
+  const pA=el('rect',{x:0,y:0,width:P,height:P,class:'pc pn'},g);
+  const strR=el('g',{class:'mv'},g);const rR=el('rect',{x:P,y:0,width:Q,height:P,class:'pc pn'},strR);const rC=el('rect',{x:P,y:P,width:Q,height:Q,class:'pc pn'},strR);
+  const tR=el('text',{x:P+Q/2,y:AA/2,class:'lbl fade'},strR);tR.innerHTML='<tspan font-style="italic">ab</tspan>';
+  const strB=el('g',{class:'mv'},g);const rB=el('rect',{x:0,y:P,width:P,height:Q,class:'pc pn'},strB);const rG=el('rect',{x:P,y:P,width:Q,height:Q,class:'pc pghost fade'},strB);
+  const tB=el('text',{x:AA/2,y:P+Q/2,class:'lbl fade'},strB);tB.innerHTML='<tspan font-style="italic">ab</tspan>';
+  const tA=el('text',{x:P/2,y:P/2,class:'lbl'},g);
+  const tPlus=el('text',{x:P+Q/2,y:P+Q/2+MV,class:'lbl fade',style:'fill:var(--ok);font-weight:600'},g);tPlus.innerHTML='+ <tspan font-style="italic">b</tspan><tspan baseline-shift="super" font-size="65%">2</tspan>';
+  const d0=el('g',{class:'dim fade'},g),d1=el('g',{class:'dim fade'},g);
+  dimLine(d0,0,-10,AA,-10,'a');dimLine(d0,-12,0,-12,AA,'a');
+  dimLine(d1,0,-10,P,-10,'a − b');dimLine(d1,P,-10,AA,-10,'b');dimLine(d1,-12,0,-12,P,'a − b');dimLine(d1,-12,P,-12,AA,'b');
+  const sq='<tspan baseline-shift="super" font-size="65%">2</tspan>';
+  const F=['«a»^2','«a»^2 − ⟪ab⟫','«a»^2 − ⟪ab⟫ − ⟪ab⟫','«a»^2 − ⟪ab⟫ − ⟪ab⟫ ⟦+ ‹b›^2⟧','(a − b)^2 = «a»^2 − 2⟪ab⟫ + ‹b›^2'];
+  const N=[['Start: the whole square has area a².','開始：整個正方形的面積是 a²。'],
+    ['Cut off the right strip: b wide, a tall. Area ab.','剪去右邊的長條：闊 b、高 a，面積是 ab。'],
+    ['Cut off the bottom strip: also a × b. But its corner was already gone — we took that b² away twice!','剪去下面的長條：也是 a × b。但它的角落早已剪走 — 那個 b² 被減了兩次！'],
+    ['So add one b² back to correct the double cut.','所以要加回一個 b²，抵消多減的部分。'],
+    ['What is left is a square of side a − b.','剩下的是邊長 a − b 的正方形。']];
+  stepper('b',5,s=>{
+    strR.style.transform=s>=1?`translate(${MV}px,0px)`:'none';
+    strB.style.transform=s>=2?`translate(0px,${MV}px)`:'none';
+    [pA,rR,rC,rB].forEach(r=>r.setAttribute('class','pc '+(s===0?'pn':'pn')));
+    if(s>=1){rR.setAttribute('class','pc pcut');rC.setAttribute('class','pc pcut');}
+    if(s>=2){rB.setAttribute('class','pc pcut');}
+    if(s===2||s===3){rC.setAttribute('class','pc pcut pwarn');}
+    rG.style.opacity=s>=2&&s<4?1:0;tR.style.opacity=s>=1?1:0;tB.style.opacity=s>=2?1:0;
+    tPlus.style.opacity=s===3?1:0;
+    pA.setAttribute('class','pc '+(s>=4?'pok':s===0?'pn':'pa'));
+    pA.style.stroke=s===0?'var(--fn)':'';rR.style.stroke=rC.style.stroke=rB.style.stroke=s===0?'var(--fn)':'';
+    tA.innerHTML=s===0?'':s>=4?'(<tspan font-style="italic">a</tspan> − <tspan font-style="italic">b</tspan>)'+sq:'?';
+    if(s===0){tA.setAttribute('x',AA/2);tA.setAttribute('y',AA/2);tA.innerHTML='<tspan font-style="italic">a</tspan>'+sq;}else{tA.setAttribute('x',P/2);tA.setAttribute('y',P/2);}
+    d0.style.opacity=s===0?1:0;d1.style.opacity=s>0?1:0;
+    setF('#bF',M(F[s]));$('#bN').innerHTML=LL(N[s]);
+  });
+})();
+
+/* ---------- 4. a^2 - b^2 ---------- */
+(()=>{const svg=$('#sqC');const U=40,a=6,b=2,AA=a*U,P=(a-b)*U,Q=b*U;
+  const g=el('g',{transform:'translate(52,44)'},svg);
+  const sq='<tspan baseline-shift="super" font-size="65%">2</tspan>',it=v=>`<tspan font-style="italic">${v}</tspan>`;
+  const rP=el('rect',{x:0,y:0,width:AA,height:P,class:'pc pn'},g);
+  const gQ=el('g',{class:'mv'},g);const rQ=el('rect',{x:0,y:0,width:P,height:Q,class:'pc pn'},gQ);
+  const gS=el('g',{class:'mv'},g);const rS=el('rect',{x:P,y:P,width:Q,height:Q,class:'pc pb'},gS);
+  const tS=el('text',{x:P+Q/2,y:P+Q/2,class:'lbl'},gS);tS.innerHTML=it('b')+sq;tS.style.fill='var(--cb)';
+  const hole=el('rect',{x:P,y:P,width:Q,height:Q,fill:'none',stroke:'var(--muted)','stroke-dasharray':'4 4',class:'fade'},g);
+  const cut=el('line',{x1:0,y1:P,x2:P,y2:P,class:'cutline'},g);
+  const tP=el('text',{x:AA/2,y:P/2,class:'lbl'},g);
+  const tQ=el('text',{x:P/2,y:P+Q/2,class:'lbl mv'},g);
+  const D=[el('g',{class:'dim fade'},g),el('g',{class:'dim fade'},g),el('g',{class:'dim fade'},g)];
+  dimLine(D[0],0,-10,AA,-10,'a');dimLine(D[0],-12,0,-12,AA,'a');
+  dimLine(D[1],0,-10,AA,-10,'a');dimLine(D[1],-12,0,-12,P,'a − b');dimLine(D[1],-12,P,-12,AA,'b');dimLine(D[1],0,AA+14,P,AA+14,'a − b');
+  dimLine(D[2],0,-10,AA,-10,'a');dimLine(D[2],AA,-10,AA+Q,-10,'b');dimLine(D[2],-12,0,-12,P,'a − b');dimLine(D[2],0,P+26,AA+Q,P+26,'a + b');
+  const F=['«a»^2','«a»^2 − ‹b›^2','«a»^2 − ‹b›^2 = «a»(a − b) + ‹b›(a − b)','«a»^2 − ‹b›^2 = (a + b)(a − b)'];
+  const N=[['A big square a² with a small square b² in the corner.','大正方形 a²，角落有一個小正方形 b²。'],
+    ['Remove b². The L-shape left has area a² − b².','剪去 b²，剩下的 L 形面積是 a² − b²。'],
+    ['Cut the L-shape into two rectangles: a × (a − b) and b × (a − b).','把 L 形剪成兩個長方形：a × (a − b) 和 b × (a − b)。'],
+    ['Turn the small rectangle and slide it to the right. One rectangle: (a + b) by (a − b)!','把小長方形轉 90° 再移到右邊，拼成一個 (a + b) × (a − b) 的長方形！']];
+  stepper('c',4,s=>{
+    gS.style.transform=s>=1?'translate(60px,60px)':'none';gS.style.opacity=s>=1?0:1;
+    hole.style.opacity=s>=1&&s<3?1:0;
+    gQ.style.transform=s>=3?`translate(${AA+Q}px,0px) rotate(90deg)`:`translate(0px,${P}px) rotate(0deg)`;
+    rP.setAttribute('class','pc '+(s>=2?'pa':'pn'));rQ.setAttribute('class','pc '+(s>=2?'pb':'pn'));
+    rP.style.stroke=rQ.style.stroke=s<2?'var(--fn)':'';
+    cut.style.opacity=s===2?1:0;
+    tP.innerHTML=s>=2?it('a')+'(<tspan font-style="italic">a</tspan> − '+it('b')+')':'';
+    tQ.innerHTML=s>=2?it('b')+'('+it('a')+' − '+it('b')+')':'';tQ.style.fontSize='16px';
+    tQ.style.transform=s>=3?`translate(${AA+Q/2-P/2}px,${P/2-(P+Q/2)}px)`:'none';
+    tP.style.fill='var(--ca)';tQ.style.fill='var(--cb)';
+    D.forEach((d,i)=>d.style.opacity=(i===0&&s===0)||(i===1&&(s===1||s===2))||(i===2&&s===3)?1:0);
+    setF('#cF',M(F[s]));$('#cN').innerHTML=LL(N[s]);
+  });
+})();
+
+/* ---------- 5. summary, 6. flow ---------- */
+const NAMES=[['Perfect square (sum)','完全平方恆等式（和）'],['Perfect square (difference)','完全平方恆等式（差）'],['Difference of two squares','平方差恆等式']];
+$('#sumCards').innerHTML=IDS.map((s,i)=>`<div class="card idcard i${i}"><div class="tag">${LL(NAMES[i])}</div><div class="big">${M(s)}</div><div class="tag">${LL([['Middle term +2ab','中間項 +2ab'],['Middle term −2ab, last term +b²','中間項 −2ab，尾項 +b²'],['No middle term','沒有中間項']][i])}</div></div>`).join('');
+$('#fl1').innerHTML=M('(2x + 3)^2,  (y − 5)^2');
+$('#fl2').innerHTML=M('(3a + 1)(3a − 1)');
+$('#fl3').innerHTML=M('(x + 2)(x − 3)');
+$('#fr1').innerHTML=M('x^2 + 6x + 9 = (x + 3)^2');
+$('#fr2').innerHTML=M('4y^2 − 25 = (2y + 5)(2y − 5)');
+$('#fr3').innerHTML=M('x^2 + 9') + ' ✗';
+
+/* ---------- 7. tester ---------- */
+const TESTS=[
+ ['(a + b)^2 = a^2 + b^2',(a,b)=>(a+b)**2,(a,b)=>a*a+b*b],
+ ['(a − b)^2 = a^2 − b^2',(a,b)=>(a-b)**2,(a,b)=>a*a-b*b],
+ ['(3a)^2 = 3a^2',(a)=>(3*a)**2,(a)=>3*a*a],
+ ['(a + b)^2 = a^2 + 2ab + b^2',(a,b)=>(a+b)**2,(a,b)=>a*a+2*a*b+b*b],
+ ['(a + b)(a − b) = a^2 − b^2',(a,b)=>(a+b)*(a-b),(a,b)=>a*a-b*b],
+ ['(a − b)^2 = (b − a)^2',(a,b)=>(a-b)**2,(a,b)=>(b-a)**2],
+ ['(−a − b)^2 = (a + b)^2',(a,b)=>(-a-b)**2,(a,b)=>(a+b)**2]];
+const r6=v=>Math.round(v*1e6)/1e6;
+function runTest(){const a=parseFloat($('#ta').value),b=parseFloat($('#tb').value);
+  if(!isFinite(a)||!isFinite(b)){$('#tBody').innerHTML='';return;}
+  let lucky=false;
+  $('#tBody').innerHTML=TESTS.map(([s,l,r],i)=>{const L1=r6(l(a,b)),R1=r6(r(a,b)),eq=L1===R1;if(eq&&[0,1,2].includes(i))lucky=true;
+    return `<tr><td class="m">${M(s)}</td><td class="v">${L1}</td><td class="v">${R1}</td><td>${eq?`<span class="yes">✓ ${L('equal','相等')}</span>`:`<span class="no">✗ ${L('not equal','不相等')}</span>`}</td></tr>`;}).join('');
+  $('#tTip').innerHTML=lucky?L('Some false statements look true for these numbers (e.g. when a or b is 0). That is luck — an identity must work for ALL values. Try other numbers!','有些錯誤的式子在這組數字下碰巧相等（例如 a 或 b 為 0）。這只是巧合 — 恆等式必須對所有數值成立。試試其他數字！')
+    :L('The first three are false: one counter-example proves it. The last four are true identities — try any numbers.','頭三條是錯的：一個反例已足以證明。後四條是恆等式 — 試甚麼數字都成立。');}
+$('#ta').oninput=runTest;$('#tb').oninput=runTest;
+$('#tRand').onclick=()=>{const r=()=>Math.floor(Math.random()*19)-9||1;$('#ta').value=r();$('#tb').value=r();runTest();};
+runTest();
+
+/* ---------- 8. mistakes ---------- */
+const MIST=[
+ ['(a + b)^2 = a^2 + b^2','(a + b)^2 = a^2 + 2ab + b^2',['Forgetting the 2ab — the #1 mistake. Remember the two purple rectangles.','漏了 2ab — 最常見的錯誤。記住那兩個紫色長方形。']],
+ ['(a − b)^2 = a^2 − b^2','(a − b)^2 = a^2 − 2ab + b^2',['Perfect square ≠ difference of two squares.','完全平方 ≠ 平方差。']],
+ ['(a − b)^2 = a^2 + 2ab − b^2','(a − b)^2 = a^2 − 2ab + b^2',['Middle term is −2ab; the last term (−b)² is always +b².','中間項是 −2ab；尾項 (−b)² 一定是 +b²。']],
+ ['(3x)^2 = 3x^2','(3x)^2 = 9x^2',['Square the coefficient too: (3x)² = 3x × 3x.','係數也要平方：(3x)² = 3x × 3x。']],
+ ['(2x + 3)^2 = 4x^2 + 6x + 9','(2x + 3)^2 = 4x^2 + 12x + 9',['Middle term is 2 × 2x × 3 = 12x, not just 2x × 3.','中間項是 2 × 2x × 3 = 12x，不只是 2x × 3。']],
+ ['a^2 + b^2 = (a + b)(a − b)','a^2 + b^2',['A sum of two squares cannot be factorised (at this level).','兩個平方之和不能因式分解。'],1],
+ ['(−a − b)^2 = −a^2 − 2ab − b^2','(−a − b)^2 = (a + b)^2 = a^2 + 2ab + b^2',['−a − b = −(a + b), and squaring removes the minus.','−a − b = −(a + b)，平方後負號消失。']]];
+$('#mist').innerHTML=MIST.map(([x,y,t,nf])=>`<div><span class="x">${M(x)}</span><span class="y">${nf?L('cannot be factorised','不能因式分解'):M(y)}</span><small>${LL(t)}</small></div>`).join('');
+
+/* =================== WORKED EXAMPLES =================== */
+const EX=[
+ {lb:'⭐',q:'(x + 5)^2',steps:[
+  {s:'(x + 5)^2',n:['Which identity?','用哪條恆等式？'],w:['A sum, squared → perfect square identity (a + b)² ≡ a² + 2ab + b².','兩項之和的平方 → 完全平方恆等式 (perfect square identity)：(a + b)² ≡ a² + 2ab + b²。'],id:0},
+  {s:'(«x» + ‹5›)^2',n:['a = x, b = 5','a = x，b = 5'],w:['Match the pattern: a is the first term, b is the second term.','對照模式：a 是第一項，b 是第二項。']},
+  {s:'«x»^2 + 2(«x»)(‹5›) + ‹5›^2',n:['Substitute','代入 (substitute)'],w:['Square the first, twice the product in the middle, square the last. 首平方，尾平方，首尾兩倍在中央。','首平方，尾平方，首尾相乘兩倍放中央。']},
+  {s:'x^2 + 10x + 25',n:['Simplify','化簡 (simplify)'],w:['Middle term: 2 × x × 5 = 10x — not 5x, and never missing!','中間項：2 × x × 5 = 10x — 不是 5x，更不可漏掉！'],fin:1}]},
+ {lb:'⭐⭐',q:'(3x − 2y)^2',steps:[
+  {s:'(3x − 2y)^2',n:['Which identity?','用哪條恆等式？'],w:['A difference, squared → (a − b)² ≡ a² − 2ab + b².','兩項之差的平方 → (a − b)² ≡ a² − 2ab + b²。'],id:1},
+  {s:'(«3x» − ‹2y›)^2',n:['a = 3x, b = 2y','a = 3x，b = 2y'],w:['a and b are whole terms — the coefficient goes with the letter.','a、b 是整個項 — 係數跟字母一起。']},
+  {s:'(«3x»)^2 − 2(«3x»)(‹2y›) + (‹2y›)^2',n:['Substitute','代入'],w:['Keep the brackets! They remind you to square the coefficient as well.','保留括號！它提醒你係數也要平方。']},
+  {s:'9x^2 − 12xy + 4y^2',n:['Simplify','化簡'],w:['(3x)² = 9x² (not 3x²). Middle: 2 × 3x × 2y = 12xy. Last term: (2y)² = 4y², positive.','(3x)² = 9x²（不是 3x²）。中間項：2 × 3x × 2y = 12xy。尾項 (2y)² = 4y²，是正數。'],fin:1}]},
+ {lb:'⭐⭐',q:'(5a + 4)(5a − 4)',steps:[
+  {s:'(5a + 4)(5a − 4)',n:['Which identity?','用哪條恆等式？'],w:['Same two terms, one sum and one difference → difference of two squares (a + b)(a − b) ≡ a² − b².','兩項相同，一個和一個差 → 平方差恆等式 (difference of two squares)：(a + b)(a − b) ≡ a² − b²。'],id:2},
+  {s:'(«5a» + ‹4›)(«5a» − ‹4›)',n:['“a” = 5a, “b” = 4','「a」= 5a，「b」= 4'],w:['Careful: the a in the identity stands for the whole first term, 5a.','小心：恆等式中的 a 代表整個第一項 5a。']},
+  {s:'(«5a»)^2 − ‹4›^2',n:['Substitute','代入'],w:['+20a and −20a cancel, so only the two squares are left.','+20a 與 −20a 互相抵消，只剩下兩個平方。']},
+  {s:'25a^2 − 16',n:['Simplify','化簡'],w:['(5a)² = 25a² — square the 5 as well.','(5a)² = 25a² — 5 也要平方。'],fin:1}]},
+ {lb:'⭐⭐',q:'(−a − b)^2',steps:[
+  {s:'(−a − b)^2',n:['Take out −1','抽出 −1'],w:['Both terms are negative: −a − b = −(a + b).','兩項都是負數：−a − b = −(a + b)。']},
+  {s:'[−(a + b)]^2',n:['(−1)² = 1','(−1)² = 1'],w:['A negative number squared is positive, so the minus disappears.','負數的平方是正數，所以負號消失。']},
+  {s:'(«a» + ‹b›)^2',n:['Perfect square','完全平方'],w:['Now it is the ordinary (a + b)².','現在就是普通的 (a + b)²。'],id:0},
+  {s:'a^2 + 2ab + b^2',n:['Not −a² − 2ab − b²!','不是 −a² − 2ab − b²！'],w:['Check with a = 1, b = 2: (−1 − 2)² = 9 and 1 + 4 + 4 = 9 ✓.','用 a = 1、b = 2 驗算：(−1 − 2)² = 9，1 + 4 + 4 = 9 ✓。'],fin:1}]},
+ {lb:'🧮',q:'99^2',steps:[
+  {s:'99^2',n:['99 = 100 − 1','99 = 100 − 1'],w:['100 is easy to square, and 99 is just 1 less.','100 很容易平方，99 只比它少 1。']},
+  {s:'(«100» − ‹1›)^2',n:['(a − b)²','(a − b)²'],w:['A difference, squared.','差的平方。'],id:1},
+  {s:'«100»^2 − 2(«100»)(‹1›) + ‹1›^2',n:['Substitute','代入'],w:['Same pattern as with letters: a = 100, b = 1.','與字母的情況一樣：a = 100，b = 1。']},
+  {s:'10 000 − 200 + 1',n:['Mental maths','心算'],w:['Each part is easy to work out in your head.','每一部分都容易心算。']},
+  {s:'9801',n:['99² = 9801','99² = 9801'],w:['Not 9999 — that would be 100² − 1², the difference-of-squares mistake.','不是 9999 — 那是 100² − 1²，混淆了平方差。'],fin:1}]},
+ {lb:'🧮',q:'1003 × 997',steps:[
+  {s:'1003 × 997',n:['Both are 3 away from 1000','兩數都與 1000 相差 3'],w:['1003 = 1000 + 3 and 997 = 1000 − 3.','1003 = 1000 + 3，997 = 1000 − 3。']},
+  {s:'(«1000» + ‹3›)(«1000» − ‹3›)',n:['Difference of two squares','平方差'],w:['Sum × difference of the same two numbers.','同樣兩個數的和 × 差。'],id:2},
+  {s:'«1000»^2 − ‹3›^2',n:['a² − b²','a² − b²'],w:['No middle term to worry about.','沒有中間項。']},
+  {s:'1 000 000 − 9',n:['Mental maths','心算'],w:['3² = 9, not 6.','3² = 9，不是 6。']},
+  {s:'999 991',n:['Done!','完成！'],w:['Also try 51 × 49 = (50 + 1)(50 − 1) = 2500 − 1 = 2499.','試試 51 × 49 = (50 + 1)(50 − 1) = 2500 − 1 = 2499。'],fin:1}]},
+ {lb:'⭐⭐⭐',q:'a + b = 7,  ab = 10',qt:['Find a² + b².','求 a² + b²。'],steps:[
+  {s:'a + b = 7,   ab = 10',n:['Find a² + b²','求 a² + b²'],w:['We don’t need a and b themselves. Find an identity that contains a², b², a + b and ab.','不用求 a 和 b。找一條包含 a²、b²、a + b 和 ab 的恆等式。']},
+  {s:'(a + b)^2 = a^2 + b^2 + 2ab',n:['Perfect square','完全平方'],w:['(a + b)² contains a² + b² plus 2ab.','(a + b)² 包含 a² + b² 和 2ab。'],id:0},
+  {s:'a^2 + b^2 = (a + b)^2 − 2ab',n:['Rearrange','移項'],w:['Move 2ab to the other side.','把 2ab 移到另一邊。']},
+  {s:'a^2 + b^2 = ⟦7⟧^2 − 2(⟦10⟧)',n:['Substitute','代入'],w:['Put in a + b = 7 and ab = 10.','代入 a + b = 7 和 ab = 10。']},
+  {s:'a^2 + b^2 = 49 − 20 = 29',n:['= 29','= 29'],w:['Check: a = 2, b = 5 works, and 4 + 25 = 29 ✓.','驗算：a = 2、b = 5 符合條件，4 + 25 = 29 ✓。'],fin:1}]},
+ {lb:'⭐⭐⭐',q:'4x^2 − 12x + 9',qt:['Factorise.','因式分解。'],steps:[
+  {s:'4x^2 − 12x + 9',n:['3 terms: a perfect square?','三項：是完全平方嗎？'],w:['Factorising = using an identity backwards. First and last terms are squares: 4x² = (2x)², 9 = 3².','因式分解 = 倒轉使用恆等式。首尾兩項都是平方：4x² = (2x)²，9 = 3²。']},
+  {s:'(«2x»)^2 − 12x + (‹3›)^2',n:['a = 2x, b = 3','a = 2x，b = 3'],w:['Now test the middle term.','現在檢查中間項。']},
+  {s:'(«2x»)^2 − 2(«2x»)(‹3›) + (‹3›)^2',n:['2 × 2x × 3 = 12x ✓','2 × 2x × 3 = 12x ✓'],w:['The middle term is exactly −2ab, so it matches a² − 2ab + b².','中間項正好是 −2ab，符合 a² − 2ab + b²。'],id:1},
+  {s:'(2x − 3)^2',n:['Factorised!','完成因式分解！'],w:['Compare: x² + 9 has no middle term and is a sum — it cannot be factorised.','比較：x² + 9 沒有中間項，而且是和 — 不能因式分解。'],fin:1}]}];
+let ex=0,es=0;
+$('#exPick').innerHTML=EX.map((e,i)=>`<button class="pick" aria-pressed="${i===0}"><span class="lb">${e.lb}</span><span class="f">${M(e.q)}</span></button>`).join('');
+$$('#exPick .pick').forEach((b,i)=>b.onclick=()=>{ex=i;es=0;$$('#exPick .pick').forEach((x,j)=>x.setAttribute('aria-pressed',i===j));renderEx(true);});
+$('#exTpl').innerHTML=IDS.map(s=>`<span class="ch">${M(s)}</span>`).join('');
+function renderEx(anim){const E=EX[ex],st=E.steps[es];
+  $('#exQ').innerHTML=E.qt?LL(E.qt):L(es===0?'Expand / evaluate:':'Working:',es===0?'展開／計算：':'步驟：');
+  $('#exStage').innerHTML=`<div class="${anim&&!reduce?'in':''}">${M(st.s)}</div>`;
+  $('#exNote').innerHTML=LL(st.n);$('#exWhy').innerHTML=LL(st.w);
+  let id=null;for(let k=0;k<=es;k++)if(E.steps[k].id!=null)id=E.steps[k].id;
+  $$('#exTpl .ch').forEach((c,i)=>c.classList.toggle('on',i===id));
+  $('#exBook').innerHTML=E.steps.slice(0,es+1).map((s,k)=>`<li class="${k===es&&anim?'new':''}"><span>${M(s.s)}</span><span class="wn">${LL(s.n)}</span></li>`).join('');
+  $('#exCount').textContent=`${es+1} / ${E.steps.length}`;
+  $('#exBack').disabled=es===0;$('#exNext').disabled=es===E.steps.length-1;}
+$('#exNext').onclick=()=>{if(es<EX[ex].steps.length-1){es++;renderEx(true);}};
+$('#exBack').onclick=()=>{if(es>0){es--;renderEx(false);}};
+$('#exAgain').onclick=()=>{es=0;renderEx(true);};
+renderEx(false);
+
+/* =================== PRACTICE =================== */
+const FB={
+ NO2AB:['Missing the middle term! (a + b)² ≠ a² + b². Don’t forget 2ab.','漏了中間項！(a + b)² ≠ a² + b²，別忘了 2ab。'],
+ ONEAB:['The middle term is 2ab — twice the product, not just ab.','中間項是 2ab — 乘積的兩倍，不只是 ab。'],
+ DIFSQ:['That’s the difference of two squares. A square of a difference is (a − b)² = a² − 2ab + b².','這是平方差。差的平方是 (a − b)² = a² − 2ab + b²。'],
+ SIGNM:['Check the sign of the middle term: (a − b)² has −2ab.','檢查中間項的符號：(a − b)² 是 −2ab。'],
+ SIGNB:['The last term b² is always positive: (−b)² = +b².','尾項 b² 一定是正數：(−b)² = +b²。'],
+ COEF:['Square the coefficient too, e.g. (3x)² = 9x², not 3x².','係數也要平方，例如 (3x)² = 9x²，不是 3x²。'],
+ BSQ:['b² means b × b, not b × 2.','b² 是 b × b，不是 b × 2。'],
+ PSQ:['(a + b)(a − b) has no middle term: +ab and −ab cancel.','(a + b)(a − b) 沒有中間項：+ab 與 −ab 互相抵消。'],
+ TERMS:['a and b are the terms inside the bracket (before squaring), coefficient included.','a、b 是括號內（未平方）的整個項，包括係數。'],
+ BNEG:['The identity (a − b)² already has the minus, so b is positive here.','恆等式 (a − b)² 已包含負號，所以這裏 b 是正的。']};
+const NONE=['None — expand term by term','不適用 — 逐項展開'];
+function idStep(ci,over={}){const opts=[0,1,2,3].map(i=>{
+  if(i===ci)return {x:i<3?IDP[i]:NONE,ok:1};
+  let fb=over[i];
+  if(!fb){if(ci===3)fb=['Look at the terms: they are not the same in both brackets, so no identity fits.','看看兩個括號：項並不相同，所以不符合任何恆等式。'];
+   else if(i===3)fb=['It does fit an identity — look at the pattern again.','其實符合一條恆等式 — 再看看模式。'];
+   else if(ci<2&&i===2)fb=['It’s ONE bracket squared, not (sum) × (difference).','這是一個括號的平方，不是「和 × 差」。'];
+   else if(ci===2)fb=['Two different brackets — one + and one −, same terms.','兩個不同的括號 — 一個 +、一個 −，項相同。'];
+   else fb=['Look at the sign inside the bracket.','留意括號內的符號。'];}
+  return {x:i<3?IDP[i]:NONE,fb};});
+  return {ask:['Which identity fits?','用哪條恆等式？'],opts,line:IDP[ci]?['Use '+IDP[ci].replace(/\^2/g,'²'),'用 '+IDP[ci].replace(/\^2/g,'²')]:NONE,lineM:ci<3?IDP[ci]:null};}
+const O=(x,fb)=>fb===true?{x,ok:1}:{x,fb};
+const st=(ask,opts,lineM)=>({ask,opts,lineM});
+const abStep=(ok,...w)=>st(['What are a and b?','a 和 b 是甚麼？'],[O(ok,true),...w.map(([x,f])=>O(x,f))],ok);
+const ansStep=(q,ok,...w)=>st(['Choose the answer.','選出答案。'],[O(ok,true),...w.map(([x,f])=>O(x,f))],q+' = '+ok);
+
+const LEVELS=[
+ {name:['⭐ Basics','⭐ 基本展開'],sub:['Expand with one letter','一個字母的展開'],qs:[
+  {q:'(x + 3)^2',hint:['首平方，尾平方，首尾兩倍在中央: x², 2 × x × 3, 3².','首平方，尾平方，首尾相乘兩倍放中央：x²、2 × x × 3、3²。'],steps:[idStep(0),
+    abStep('a = x,  b = 3',['a = x^2,  b = 9',FB.TERMS],['a = x,  b = 6',FB.TERMS]),
+    ansStep('(x + 3)^2','x^2 + 6x + 9',['x^2 + 9',FB.NO2AB],['x^2 + 3x + 9',FB.ONEAB],['x^2 + 6x + 6',FB.BSQ])],
+   work:['(x)^2 + 2(x)(3) + (3)^2','= x^2 + 6x + 9']},
+  {q:'(y − 4)^2',hint:['(a − b)²: square, minus twice the product, plus square.','(a − b)²：平方、減兩倍乘積、加平方。'],steps:[idStep(1),
+    abStep('a = y,  b = 4',['a = y,  b = −4',FB.BNEG],['a = y^2,  b = 16',FB.TERMS]),
+    ansStep('(y − 4)^2','y^2 − 8y + 16',['y^2 − 16',FB.DIFSQ],['y^2 + 8y + 16',FB.SIGNM],['y^2 − 8y − 16',FB.SIGNB])],
+   work:['(y)^2 − 2(y)(4) + (4)^2','= y^2 − 8y + 16']},
+  {q:'(m + 6)(m − 6)',hint:['Same terms, + and − → a² − b². No middle term.','項相同，一個 + 一個 − → a² − b²，沒有中間項。'],steps:[idStep(2),
+    abStep('a = m,  b = 6',['a = m,  b = −6',['The identity already has + and −, so b = 6.','恆等式已有 + 和 −，所以 b = 6。']],['a = m^2,  b = 36',FB.TERMS]),
+    ansStep('(m + 6)(m − 6)','m^2 − 36',['m^2 + 36',['a² − b²: the b² is subtracted.','a² − b²：b² 是減去的。']],['m^2 − 12m + 36',['That’s (m − 6)². '+FB.PSQ[0],'這是 (m − 6)²。'+FB.PSQ[1]]],['m^2 − 12',FB.BSQ])],
+   work:['(m)^2 − (6)^2','= m^2 − 36']},
+  {q:'(10 + p)^2',hint:['a = 10, b = p.','a = 10，b = p。'],steps:[idStep(0),
+    abStep('a = 10,  b = p',['a = 100,  b = p^2',FB.TERMS],['a = 10p,  b = 1',FB.TERMS]),
+    ansStep('(10 + p)^2','100 + 20p + p^2',['100 + p^2',FB.NO2AB],['100 + 10p + p^2',FB.ONEAB],['20 + 20p + p^2',['10² = 10 × 10 = 100, not 20.','10² = 10 × 10 = 100，不是 20。']])],
+   work:['(10)^2 + 2(10)(p) + (p)^2','= 100 + 20p + p^2']},
+  {q:'(n − 7)(n + 7)',hint:['The order of the brackets doesn’t matter.','括號的次序不影響結果。'],steps:[idStep(2),
+    ansStep('(n − 7)(n + 7)','n^2 − 49',['49 − n^2',['a is the term with the same sign in both brackets (n), so it’s n² − 49.','a 是兩個括號中符號相同的項 (n)，所以是 n² − 49。']],['n^2 − 14n + 49',FB.PSQ],['n^2 − 14',FB.BSQ])],
+   work:['(n)^2 − (7)^2','= n^2 − 49']}]},
+ {name:['⭐⭐ Coefficients','⭐⭐ 係數與兩個變數'],sub:['Coefficients & two letters','係數及兩個字母'],qs:[
+  {q:'(3x − 2y)^2',hint:['a = 3x, b = 2y. Keep brackets: (3x)², (2y)².','a = 3x，b = 2y。保留括號：(3x)²、(2y)²。'],steps:[idStep(1),
+    abStep('a = 3x,  b = 2y',['a = 3,  b = 2',FB.TERMS],['a = x,  b = y',FB.TERMS]),
+    ansStep('(3x − 2y)^2','9x^2 − 12xy + 4y^2',['3x^2 − 12xy + 2y^2',FB.COEF],['9x^2 − 6xy + 4y^2',FB.ONEAB],['9x^2 − 4y^2',FB.DIFSQ])],
+   work:['(3x)^2 − 2(3x)(2y) + (2y)^2','= 9x^2 − 12xy + 4y^2']},
+  {q:'(5a + 4)(5a − 4)',hint:['Here the identity’s “a” is the whole term 5a.','這裏恆等式的「a」是整個項 5a。'],steps:[idStep(2),
+    ansStep('(5a + 4)(5a − 4)','25a^2 − 16',['5a^2 − 16',['Square the coefficient too: (5a)² = 25a².','係數也要平方：(5a)² = 25a²。']],['25a^2 − 40a + 16',FB.PSQ],['25a^2 − 8',FB.BSQ])],
+   work:['(5a)^2 − (4)^2','= 25a^2 − 16']},
+  {q:'(2p + 3q)^2',hint:['Middle term: 2 × 2p × 3q.','中間項：2 × 2p × 3q。'],steps:[idStep(0),
+    abStep('a = 2p,  b = 3q',['a = 2,  b = 3',FB.TERMS],['a = 4p^2,  b = 9q^2',FB.TERMS]),
+    ansStep('(2p + 3q)^2','4p^2 + 12pq + 9q^2',['4p^2 + 9q^2',FB.NO2AB],['4p^2 + 6pq + 9q^2',FB.ONEAB],['2p^2 + 12pq + 3q^2',FB.COEF])],
+   work:['(2p)^2 + 2(2p)(3q) + (3q)^2','= 4p^2 + 12pq + 9q^2']},
+  {q:'(4 − 3k)^2',hint:['a = 4, b = 3k.','a = 4，b = 3k。'],steps:[idStep(1),
+    ansStep('(4 − 3k)^2','16 − 24k + 9k^2',['16 − 9k^2',FB.DIFSQ],['16 − 24k − 9k^2',FB.SIGNB],['16 − 12k + 9k^2',FB.ONEAB])],
+   work:['(4)^2 − 2(4)(3k) + (3k)^2','= 16 − 24k + 9k^2']},
+  {q:'(−a − b)^2',hint:['−a − b = −(a + b).','−a − b = −(a + b)。'],steps:[
+    st(['Rewrite it first.','先改寫。'],[O('(a + b)^2',true),O('−(a + b)^2',['Squaring removes the minus: [−(a + b)]² = (−1)²(a + b)² = (a + b)².','平方會消去負號：[−(a + b)]² = (−1)²(a + b)² = (a + b)²。']),O('(a − b)^2',['−a − b = −(a + b), not −(a − b).','−a − b = −(a + b)，不是 −(a − b)。'])],'(−a − b)^2 = (a + b)^2'),
+    ansStep('(−a − b)^2','a^2 + 2ab + b^2',['−a^2 − 2ab − b^2',['A square is never negative: (−a)² = a².','平方不會是負數：(−a)² = a²。']],['a^2 − 2ab + b^2',['(−a)(−b) = +ab, so the middle term is +2ab.','(−a)(−b) = +ab，所以中間項是 +2ab。']],['a^2 + b^2',FB.NO2AB])],
+   work:['(−a − b)^2 = [−(a + b)]^2 = (a + b)^2','= a^2 + 2ab + b^2']},
+  {q:'(2x^2 − 1)^2',hint:['Laws of indices: (x²)² = x⁴.','指數定律：(x²)² = x⁴。'],steps:[idStep(1),
+    ansStep('(2x^2 − 1)^2','4x^4 − 4x^2 + 1',['2x^4 − 4x^2 + 1',FB.COEF],['4x^4 − 1',FB.DIFSQ],['4x^2 − 4x + 1',['(2x²)² = 4x⁴ by the laws of indices.','根據指數定律，(2x²)² = 4x⁴。']])],
+   work:['(2x^2)^2 − 2(2x^2)(1) + (1)^2','= 4x^4 − 4x^2 + 1']}]},
+ {name:['🧮 Mental maths','🧮 速算'],sub:['Use identities with numbers','用恆等式心算'],qs:[
+  {q:'99^2',hint:['99 = 100 − 1.','99 = 100 − 1。'],steps:[
+    st(['Rewrite 99² using an identity.','用恆等式改寫 99²。'],[O('(100 − 1)^2',true),O('(100 + 1)(100 − 1)',['That’s 101 × 99, not 99².','這是 101 × 99，不是 99²。']),O('100^2 − 1^2',['99² ≠ 100² − 1²: that skips the −2ab term.','99² ≠ 100² − 1²：漏了 −2ab。'])],'99^2 = (100 − 1)^2'),
+    ansStep('99^2','9801',['9999',['That’s 100² − 1² — the −2ab term is missing.','這是 100² − 1² — 漏了 −2ab。']],['9899',['Middle term: 2 × 100 × 1 = 200, not 100.','中間項：2 × 100 × 1 = 200，不是 100。']],['10 201',['That’s 101². 99 = 100 − 1, so subtract 200.','這是 101²。99 = 100 − 1，所以要減 200。']])],
+   work:['(100 − 1)^2 = 100^2 − 2(100)(1) + 1^2','= 10 000 − 200 + 1 = 9801']},
+  {q:'102^2',hint:['102 = 100 + 2.','102 = 100 + 2。'],steps:[
+    st(['Rewrite 102² using an identity.','用恆等式改寫 102²。'],[O('(100 + 2)^2',true),O('(100 + 2)(100 − 2)',['That’s 102 × 98.','這是 102 × 98。']),O('100^2 + 2^2',FB.NO2AB)],'102^2 = (100 + 2)^2'),
+    ansStep('102^2','10 404',['10 004',FB.NO2AB],['10 204',['Middle term: 2 × 100 × 2 = 400.','中間項：2 × 100 × 2 = 400。']],['10 400',['Don’t forget + b² = + 4.','別忘了 + b² = + 4。']])],
+   work:['(100 + 2)^2 = 100^2 + 2(100)(2) + 2^2','= 10 000 + 400 + 4 = 10 404']},
+  {q:'51 × 49',hint:['One is 1 more than 50, the other 1 less.','一個比 50 大 1，一個比 50 小 1。'],steps:[
+    st(['Rewrite 51 × 49 using an identity.','用恆等式改寫 51 × 49。'],[O('(50 + 1)(50 − 1)',true),O('(50 + 1)^2',['That’s 51 × 51.','這是 51 × 51。']),O('(50 − 1)^2',['That’s 49 × 49.','這是 49 × 49。'])],'51 × 49 = (50 + 1)(50 − 1)'),
+    ansStep('51 × 49','2499',['2501',['a² − b²: subtract 1², don’t add it.','a² − b²：要減 1²，不是加。']],['2500',['Don’t forget − b² = − 1.','別忘了 − b² = − 1。']],['2401',['50² = 2500.','50² = 2500。']])],
+   work:['(50 + 1)(50 − 1) = 50^2 − 1^2','= 2500 − 1 = 2499']},
+  {q:'1003 × 997',hint:['Both numbers are 3 away from 1000.','兩個數都與 1000 相差 3。'],steps:[
+    st(['Rewrite using an identity.','用恆等式改寫。'],[O('(1000 + 3)(1000 − 3)',true),O('(1000 − 3)^2',['That’s 997², not 1003 × 997.','這是 997²，不是 1003 × 997。']),O('(1000 + 3)^2',['That’s 1003².','這是 1003²。'])],'1003 × 997 = (1000 + 3)(1000 − 3)'),
+    ansStep('1003 × 997','999 991',['999 997',['b² = 3² = 9, not 3.','b² = 3² = 9，不是 3。']],['1 000 009',['a² − b²: subtract the 9.','a² − b²：要減 9。']],['999 994',['3² = 3 × 3 = 9, not 3 × 2.','3² = 3 × 3 = 9，不是 3 × 2。']])],
+   work:['(1000 + 3)(1000 − 3) = 1000^2 − 3^2','= 1 000 000 − 9 = 999 991']},
+  {q:'198^2',hint:['198 = 200 − 2.','198 = 200 − 2。'],steps:[
+    st(['Rewrite 198² using an identity.','用恆等式改寫 198²。'],[O('(200 − 2)^2',true),O('200^2 − 2^2',FB.DIFSQ),O('(200 + 2)(200 − 2)',['That’s 202 × 198.','這是 202 × 198。'])],'198^2 = (200 − 2)^2'),
+    ansStep('198^2','39 204',['39 996',FB.DIFSQ],['39 604',['Middle term: 2 × 200 × 2 = 800.','中間項：2 × 200 × 2 = 800。']],['40 804',['198 = 200 − 2, so subtract 800, don’t add it.','198 = 200 − 2，所以是減 800，不是加。']])],
+   work:['(200 − 2)^2 = 200^2 − 2(200)(2) + 2^2','= 40 000 − 800 + 4 = 39 204']},
+  {q:'25.5 × 24.5',hint:['Both are 0.5 away from 25.','兩個數都與 25 相差 0.5。'],steps:[
+    st(['Rewrite using an identity.','用恆等式改寫。'],[O('(25 + 0.5)(25 − 0.5)',true),O('(25 + 0.5)^2',['That’s 25.5².','這是 25.5²。']),O('(24 + 1.5)(24 − 0.5)',['The numbers in the brackets must be the same.','兩個括號內的數必須相同。'])],'25.5 × 24.5 = (25 + 0.5)(25 − 0.5)'),
+    ansStep('25.5 × 24.5','624.75',['625.25',['a² − b²: subtract 0.25.','a² − b²：要減 0.25。']],['624.5',['0.5² = 0.25, not 0.5.','0.5² = 0.25，不是 0.5。']],['625',['Don’t forget − 0.5².','別忘了 − 0.5²。']])],
+   work:['(25 + 0.5)(25 − 0.5) = 25^2 − 0.5^2','= 625 − 0.25 = 624.75']}]},
+ {name:['⭐⭐⭐ Extension','⭐⭐⭐ 延伸'],sub:['Spot it, reverse it, use it','辨認、倒轉、應用'],qs:[
+  {q:'(x + 2)(x − 3)',qt:['Expand.','展開。'],hint:['Are the terms the same in both brackets?','兩個括號內的項相同嗎？'],steps:[idStep(3,{2:['The numbers differ (2 and 3), so it isn’t (a + b)(a − b).','兩個數不同（2 和 3），所以不是 (a + b)(a − b)。']}),
+    ansStep('(x + 2)(x − 3)','x^2 − x − 6',['x^2 − 6',['The middle terms −3x and +2x don’t cancel: −3x + 2x = −x.','中間項 −3x 和 +2x 不會抵消：−3x + 2x = −x。']],['x^2 + x − 6',['−3x + 2x = −x, not +x.','−3x + 2x = −x，不是 +x。']],['x^2 − 5x − 6',['−3x + 2x = −x, not −5x.','−3x + 2x = −x，不是 −5x。']])],
+   work:['x^2 − 3x + 2x − 6','= x^2 − x − 6']},
+  {q:'(3y + 2)(2 − 3y)',qt:['Expand.','展開。'],hint:['Rewrite the first bracket as (2 + 3y).','把第一個括號寫成 (2 + 3y)。'],steps:[
+    st(['Which term is “a” (same sign in both brackets)?','哪一項是「a」（兩個括號中符號相同）？'],[O('a = 2,  b = 3y',true),O('a = 3y,  b = 2',['3y is + in one bracket and − in the other, so it is b.','3y 在一個括號是 +，另一個是 −，所以它是 b。'])],'(2 + 3y)(2 − 3y):  a = 2,  b = 3y'),
+    ansStep('(3y + 2)(2 − 3y)','4 − 9y^2',['9y^2 − 4',['Order matters: a² − b² = 2² − (3y)².','次序很重要：a² − b² = 2² − (3y)²。']],['4 − 3y^2',FB.COEF],['4 − 12y + 9y^2',FB.PSQ])],
+   work:['(2 + 3y)(2 − 3y) = 2^2 − (3y)^2','= 4 − 9y^2']},
+  {q:'x^2 − 10x + 25',qt:['Factorise.','因式分解。'],hint:['25 = 5², and 10x = 2 × x × 5.','25 = 5²，10x = 2 × x × 5。'],steps:[idStep(1,{0:['The middle term is −10x, so the bracket has −.','中間項是 −10x，所以括號內是 −。'],2:['Three terms with a middle term → perfect square, not difference of squares.','有中間項的三項式 → 完全平方，不是平方差。'],3:['It does fit: x² and 25 = 5² are squares, and 10x = 2 × x × 5.','符合的：x² 和 25 = 5² 都是平方，10x = 2 × x × 5。']}),
+    ansStep('x^2 − 10x + 25','(x − 5)^2',['(x + 5)^2',['(x + 5)² = x² + 10x + 25; here the middle term is −10x.','(x + 5)² = x² + 10x + 25；這裏中間項是 −10x。']],['(x + 5)(x − 5)',['That expands to x² − 25.','這展開後是 x² − 25。']],['(x − 25)^2',['25 = 5², so b = 5.','25 = 5²，所以 b = 5。']])],
+   work:['x^2 − 2(x)(5) + 5^2','= (x − 5)^2']},
+  {q:'9m^2 − 16n^2',qt:['Factorise.','因式分解。'],hint:['9m² = (3m)², 16n² = (4n)².','9m² = (3m)²，16n² = (4n)²。'],steps:[idStep(2,{1:['There’s no middle term — square minus square.','沒有中間項 — 平方減平方。'],0:['There’s no middle term — square minus square.','沒有中間項 — 平方減平方。']}),
+    ansStep('9m^2 − 16n^2','(3m + 4n)(3m − 4n)',['(3m − 4n)^2',['That expands to 9m² − 24mn + 16n².','這展開後是 9m² − 24mn + 16n²。']],['(9m + 16n)(9m − 16n)',['a² = 9m², so a = 3m (and b = 4n).','a² = 9m²，所以 a = 3m（b = 4n）。']],['(3m + 4n)^2',['That has a middle term +24mn.','這有中間項 +24mn。']])],
+   work:['(3m)^2 − (4n)^2','= (3m + 4n)(3m − 4n)']},
+  {q:'a^2 + 9',qt:['Factorise, if possible.','如可以，把它因式分解。'],hint:['Expand each option and compare.','把每個選項展開來比較。'],steps:[
+    st(['Choose the answer.','選出答案。'],[O(['Cannot be factorised','不能因式分解'],true),O('(a + 3)^2',['(a + 3)² = a² + 6a + 9 — there is an extra 6a.','(a + 3)² = a² + 6a + 9 — 多了 6a。']),O('(a + 3)(a − 3)',['(a + 3)(a − 3) = a² − 9, not + 9.','(a + 3)(a − 3) = a² − 9，不是 + 9。']),O('(a − 3)^2',['(a − 3)² = a² − 6a + 9.','(a − 3)² = a² − 6a + 9。'])],null)],
+   work:[['A sum of two squares a² + b² cannot be factorised.','兩個平方之和 a² + b² 不能因式分解。']]},
+  {q:'a + b = 7,  ab = 10',qt:['Find a² + b².','求 a² + b²。'],hint:['(a + b)² = a² + 2ab + b².','(a + b)² = a² + 2ab + b²。'],steps:[
+    st(['Which expression equals a² + b²?','哪一個式子等於 a² + b²？'],[O('(a + b)^2 − 2ab',true),O('(a + b)^2 + 2ab',['(a + b)² already includes +2ab, so subtract it.','(a + b)² 已包含 +2ab，所以要減去。']),O('(a + b)^2',['(a + b)² = a² + 2ab + b² — it has an extra 2ab.','(a + b)² = a² + 2ab + b² — 多了 2ab。']),O('(a + b)^2 − ab',FB.ONEAB)],'a^2 + b^2 = (a + b)^2 − 2ab'),
+    st(['Choose the answer.','選出答案。'],[O('29',true),O('69',['49 − 20, not 49 + 20.','是 49 − 20，不是 49 + 20。']),O('39',['2ab = 2 × 10 = 20.','2ab = 2 × 10 = 20。']),O('49',['Subtract 2ab = 20 first.','要先減 2ab = 20。'])],'= 7^2 − 2(10) = 29')],
+   work:['a^2 + b^2 = (a + b)^2 − 2ab','= 7^2 − 2(10) = 49 − 20 = 29']},
+  {q:'a − b = 3,  ab = 4',qt:['Find a² + b².','求 a² + b²。'],hint:['(a − b)² = a² − 2ab + b².','(a − b)² = a² − 2ab + b²。'],steps:[
+    st(['Which expression equals a² + b²?','哪一個式子等於 a² + b²？'],[O('(a − b)^2 + 2ab',true),O('(a − b)^2 − 2ab',['(a − b)² = a² − 2ab + b², so add 2ab back.','(a − b)² = a² − 2ab + b²，所以要加回 2ab。']),O('(a + b)^2 − 2ab',['True, but we know a − b, not a + b.','正確，但我們知道的是 a − b，不是 a + b。'])],'a^2 + b^2 = (a − b)^2 + 2ab'),
+    st(['Choose the answer.','選出答案。'],[O('17',true),O('1',['9 + 8, not 9 − 8.','是 9 + 8，不是 9 − 8。']),O('13',['2ab = 2 × 4 = 8.','2ab = 2 × 4 = 8。']),O('25',['(a − b)² = 3² = 9.','(a − b)² = 3² = 9。'])],'= 3^2 + 2(4) = 17')],
+   work:['a^2 + b^2 = (a − b)^2 + 2ab','= 3^2 + 2(4) = 9 + 8 = 17']}]}];
+
+const P={lv:0,qi:0,state:{}};
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function qs(){const k=P.lv+'-'+P.qi;if(!P.state[k]){const Q=LEVELS[P.lv].qs[P.qi];P.state[k]={step:0,first:true,done:false,order:Q.steps.map(s=>shuf(s.opts.map((_,i)=>i))),wrong:Q.steps.map(()=>new Set()),hint:false};}return P.state[k];}
+$('#levels').innerHTML=LEVELS.map((l,i)=>`<button class="lv" aria-pressed="${i===0}"><b>${LL(l.name)}</b><span>${LL(l.sub)}</span></button>`).join('');
+$$('#levels .lv').forEach((b,i)=>b.onclick=()=>{P.lv=i;P.qi=0;$$('#levels .lv').forEach((x,j)=>x.setAttribute('aria-pressed',i===j));renderP();});
+function renderProg(){const lv=LEVELS[P.lv];let sc=0,dn=0;
+  $('#prog').innerHTML=lv.qs.map((q,i)=>{const s=P.state[P.lv+'-'+i];if(s&&s.done){dn++;if(s.first)sc++;}
+    return `<button class="dot ${s&&s.done?'done':''} ${s&&s.done&&!s.first?'retry':''}" aria-current="${i===P.qi}" aria-label="Q${i+1}">${i+1}</button>`;}).join('')+
+    `<span class="score">${L(`Done ${dn}/${lv.qs.length} · first try ${sc}`,`完成 ${dn}/${lv.qs.length} · 一次答對 ${sc}`)}</span>`;
+  $$('#prog .dot').forEach((d,i)=>d.onclick=()=>{P.qi=i;renderP();});}
+function renderP(fresh){const Q=LEVELS[P.lv].qs[P.qi],S=qs();renderProg();
+  const c=$('#qcard');
+  let h=`<div class="qtext">${LL(Q.qt||['Expand.','展開。'])} · ${L('Question','第')} ${P.qi+1}${L('',' 題')}</div><div class="qhead">${M(Q.q)}</div>`;
+  if(!S.done){const stp=Q.steps[S.step];
+    h+=`<div class="stepno">${L('Step','步驟')} ${S.step+1} / ${Q.steps.length}</div><div class="ask">${LL(stp.ask)}</div><div class="opts">`+
+      S.order[S.step].map((oi,n)=>{const o=stp.opts[oi];const bad=S.wrong[S.step].has(oi);
+        return `<button class="opt ${bad?'bad':''}" data-oi="${oi}" ${bad?'disabled':''}><span class="k">${'ABCD'[n]}</span><span class="${typeof o.x==='string'?'f':''}">${X(o.x)}</span></button>`;}).join('')+
+      `</div><div class="fb" id="fb" aria-live="polite"></div>`+
+      (S.hint?`<div class="hint">💡 ${LL(Q.hint)}</div>`:`<div class="btnrow"><button class="btn" id="hintB">💡 ${L('Hint','提示')}</button></div>`);
+  }else{
+    h+=`<div class="answer"><b>${S.first?L('✓ Correct first time!','✓ 一次答對！'):L('✓ Solved','✓ 完成')}</b>${Q.work.map(w=>`<div class="w">${X(w)}</div>`).join('')}</div>
+      <div class="btnrow">${P.qi<LEVELS[P.lv].qs.length-1?`<button class="btn primary" id="nextQ">${L('Next question','下一題')} ▶</button>`:(P.lv<LEVELS.length-1?`<button class="btn primary" id="nextL">${L('Next level','下一級')} ▶</button>`:`<span class="mnem">${L('All levels done — well done!','全部完成，做得好！')}</span>`)}
+      <button class="btn" id="redo">↺ ${L('Try again','再做一次')}</button></div>`;
+  }
+  c.innerHTML=h;
+  const lines=Q.steps.slice(0,S.done?Q.steps.length:S.step).map(s=>s.lineM).filter(Boolean);
+  $('#pBook').innerHTML=`<li><span>${M(Q.q)}</span><span class="wn">${LL(Q.qt||['Expand','展開'])}</span></li>`+lines.map((l,i)=>`<li class="${fresh&&i===lines.length-1?'new':''}"><span>${M(l)}</span></li>`).join('');
+  $$('.opt',c).forEach(b=>b.onclick=()=>pick(+b.dataset.oi,b));
+  const hb=$('#hintB');if(hb)hb.onclick=()=>{S.hint=true;S.first=false;renderP();};
+  const nq=$('#nextQ');if(nq)nq.onclick=()=>{P.qi++;renderP();};
+  const nl=$('#nextL');if(nl)nl.onclick=()=>$$('#levels .lv')[P.lv+1].click();
+  const rd=$('#redo');if(rd)rd.onclick=()=>{delete P.state[P.lv+'-'+P.qi];renderP();};
+}
+function pick(oi,btn){const Q=LEVELS[P.lv].qs[P.qi],S=qs(),stp=Q.steps[S.step],o=stp.opts[oi];
+  if(o.ok){btn.classList.add('good');$$('.opt').forEach(b=>b.disabled=true);
+    const fb=$('#fb');fb.className='fb ok';fb.innerHTML=L('✓ Correct!','✓ 正確！');
+    setTimeout(()=>{S.step++;if(S.step>=Q.steps.length)S.done=true;renderP(true);},reduce?0:650);
+  }else{S.first=false;S.wrong[S.step].add(oi);btn.classList.add('bad');btn.disabled=true;
+    const fb=$('#fb');fb.className='fb bad';fb.innerHTML=LL(o.fb||['Not quite — try again.','不對，再試一次。']);}
+}
+renderP();
+})();
+</script>
+</body>
+</html>
