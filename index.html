@@ -790,7 +790,15 @@ const LEVELS=[
    work:['(10)^2 + 2(10)(p) + (p)^2','= 100 + 20p + p^2']},
   {q:'(n − 7)(n + 7)',hint:['The order of the brackets doesn’t matter.','括號的次序不影響結果。'],steps:[idStep(2),
     ansStep('(n − 7)(n + 7)','n^2 − 49',['49 − n^2',['a is the term with the same sign in both brackets (n), so it’s n² − 49.','a 是兩個括號中符號相同的項 (n)，所以是 n² − 49。']],['n^2 − 14n + 49',FB.PSQ],['n^2 − 14',FB.BSQ])],
-   work:['(n)^2 − (7)^2','= n^2 − 49']}]},
+   work:['(n)^2 − (7)^2','= n^2 − 49']},
+  {q:'(k + 8)^2',hint:['首平方，尾平方，首尾兩倍在中央: k², 2 × k × 8, 8².','首平方，尾平方，首尾相乘兩倍放中央：k²、2 × k × 8、8²。'],steps:[idStep(0),
+    abStep('a = k,  b = 8',['a = k^2,  b = 64',FB.TERMS],['a = 2k,  b = 16',FB.TERMS]),
+    ansStep('(k + 8)^2','k^2 + 16k + 64',['k^2 + 64',FB.NO2AB],['k^2 + 8k + 64',FB.ONEAB],['k^2 + 16k + 16',FB.BSQ])],
+   work:['(k)^2 + 2(k)(8) + (8)^2','= k^2 + 16k + 64']},
+  {q:'(6 − t)^2',hint:['a = 6, b = t.','a = 6，b = t。'],steps:[idStep(1),
+    abStep('a = 6,  b = t',['a = 6,  b = −t',FB.BNEG],['a = 36,  b = t^2',FB.TERMS]),
+    ansStep('(6 − t)^2','36 − 12t + t^2',['36 − t^2',FB.DIFSQ],['36 + 12t + t^2',FB.SIGNM],['36 − 12t − t^2',FB.SIGNB])],
+   work:['(6)^2 − 2(6)(t) + (t)^2','= 36 − 12t + t^2']}]},
  {name:['⭐⭐ Coefficients','⭐⭐ 係數與兩個變數'],sub:['Coefficients & two letters','係數及兩個字母'],qs:[
   {q:'(3x − 2y)^2',hint:['a = 3x, b = 2y. Keep brackets: (3x)², (2y)².','a = 3x，b = 2y。保留括號：(3x)²、(2y)²。'],steps:[idStep(1),
     abStep('a = 3x,  b = 2y',['a = 3,  b = 2',FB.TERMS],['a = x,  b = y',FB.TERMS]),
@@ -812,7 +820,14 @@ const LEVELS=[
    work:['(−a − b)^2 = [−(a + b)]^2 = (a + b)^2','= a^2 + 2ab + b^2']},
   {q:'(2x^2 − 1)^2',hint:['Laws of indices: (x²)² = x⁴.','指數定律：(x²)² = x⁴。'],steps:[idStep(1),
     ansStep('(2x^2 − 1)^2','4x^4 − 4x^2 + 1',['2x^4 − 4x^2 + 1',FB.COEF],['4x^4 − 1',FB.DIFSQ],['4x^2 − 4x + 1',['(2x²)² = 4x⁴ by the laws of indices.','根據指數定律，(2x²)² = 4x⁴。']])],
-   work:['(2x^2)^2 − 2(2x^2)(1) + (1)^2','= 4x^4 − 4x^2 + 1']}]},
+   work:['(2x^2)^2 − 2(2x^2)(1) + (1)^2','= 4x^4 − 4x^2 + 1']},
+  {q:'(4m + 5n)(4m − 5n)',hint:['a = 4m, b = 5n. Square the coefficients.','a = 4m，b = 5n。係數也要平方。'],steps:[idStep(2),
+    ansStep('(4m + 5n)(4m − 5n)','16m^2 − 25n^2',['4m^2 − 5n^2',FB.COEF],['16m^2 − 40mn + 25n^2',FB.PSQ],['16m^2 + 25n^2',['a² − b²: the b² is subtracted.','a² − b²：b² 是減去的。']])],
+   work:['(4m)^2 − (5n)^2','= 16m^2 − 25n^2']},
+  {q:'(−2x + 3)^2',hint:['−2x + 3 = 3 − 2x.','−2x + 3 = 3 − 2x。'],steps:[
+    st(['Rewrite it first.','先改寫。'],[O('(3 − 2x)^2',true),O('(2x + 3)^2',['−2x + 3 = 3 − 2x, not 2x + 3.','−2x + 3 = 3 − 2x，不是 2x + 3。']),O('−(2x + 3)^2',['Only the 2x is negative, and a square is never negative.','只有 2x 是負數，而且平方不會是負數。'])],'(−2x + 3)^2 = (3 − 2x)^2'),
+    ansStep('(−2x + 3)^2','9 − 12x + 4x^2',['9 − 4x^2',FB.DIFSQ],['9 + 12x + 4x^2',FB.SIGNM],['9 − 6x + 4x^2',FB.ONEAB])],
+   work:['(3 − 2x)^2 = (3)^2 − 2(3)(2x) + (2x)^2','= 9 − 12x + 4x^2']}]},
  {name:['🧮 Mental maths','🧮 速算'],sub:['Use identities with numbers','用恆等式心算'],qs:[
   {q:'99^2',hint:['99 = 100 − 1.','99 = 100 − 1。'],steps:[
     st(['Rewrite 99² using an identity.','用恆等式改寫 99²。'],[O('(100 − 1)^2',true),O('(100 + 1)(100 − 1)',['That’s 101 × 99, not 99².','這是 101 × 99，不是 99²。']),O('100^2 − 1^2',['99² ≠ 100² − 1²: that skips the −2ab term.','99² ≠ 100² − 1²：漏了 −2ab。'])],'99^2 = (100 − 1)^2'),
@@ -837,7 +852,11 @@ const LEVELS=[
   {q:'25.5 × 24.5',hint:['Both are 0.5 away from 25.','兩個數都與 25 相差 0.5。'],steps:[
     st(['Rewrite using an identity.','用恆等式改寫。'],[O('(25 + 0.5)(25 − 0.5)',true),O('(25 + 0.5)^2',['That’s 25.5².','這是 25.5²。']),O('(24 + 1.5)(24 − 0.5)',['The numbers in the brackets must be the same.','兩個括號內的數必須相同。'])],'25.5 × 24.5 = (25 + 0.5)(25 − 0.5)'),
     ansStep('25.5 × 24.5','624.75',['625.25',['a² − b²: subtract 0.25.','a² − b²：要減 0.25。']],['624.5',['0.5² = 0.25, not 0.5.','0.5² = 0.25，不是 0.5。']],['625',['Don’t forget − 0.5².','別忘了 − 0.5²。']])],
-   work:['(25 + 0.5)(25 − 0.5) = 25^2 − 0.5^2','= 625 − 0.25 = 624.75']}]},
+   work:['(25 + 0.5)(25 − 0.5) = 25^2 − 0.5^2','= 625 − 0.25 = 624.75']},
+  {q:'7.9 × 8.1',hint:['Both are 0.1 away from 8.','兩個數都與 8 相差 0.1。'],steps:[
+    st(['Rewrite using an identity.','用恆等式改寫。'],[O('(8 − 0.1)(8 + 0.1)',true),O('(8 − 0.1)^2',['That’s 7.9².','這是 7.9²。']),O('(7 + 0.9)(8 + 0.1)',['The numbers in the brackets must be the same.','兩個括號內的數必須相同。'])],'7.9 × 8.1 = (8 − 0.1)(8 + 0.1)'),
+    ansStep('7.9 × 8.1','63.99',['64.01',['a² − b²: subtract 0.01.','a² − b²：要減 0.01。']],['63.9',['0.1² = 0.01, not 0.1.','0.1² = 0.01，不是 0.1。']],['63.8',['0.1² = 0.1 × 0.1, not 0.1 × 2.','0.1² = 0.1 × 0.1，不是 0.1 × 2。']])],
+   work:['(8 − 0.1)(8 + 0.1) = 8^2 − 0.1^2','= 64 − 0.01 = 63.99']}]},
  {name:['⭐⭐⭐ Extension','⭐⭐⭐ 延伸'],sub:['Spot it, reverse it, use it','辨認、倒轉、應用'],qs:[
   {q:'(x + 2)(x − 3)',qt:['Expand.','展開。'],hint:['Are the terms the same in both brackets?','兩個括號內的項相同嗎？'],steps:[idStep(3,{2:['The numbers differ (2 and 3), so it isn’t (a + b)(a − b).','兩個數不同（2 和 3），所以不是 (a + b)(a − b)。']}),
     ansStep('(x + 2)(x − 3)','x^2 − x − 6',['x^2 − 6',['The middle terms −3x and +2x don’t cancel: −3x + 2x = −x.','中間項 −3x 和 +2x 不會抵消：−3x + 2x = −x。']],['x^2 + x − 6',['−3x + 2x = −x, not +x.','−3x + 2x = −x，不是 +x。']],['x^2 − 5x − 6',['−3x + 2x = −x, not −5x.','−3x + 2x = −x，不是 −5x。']])],
@@ -862,7 +881,11 @@ const LEVELS=[
   {q:'a − b = 3,  ab = 4',qt:['Find a² + b².','求 a² + b²。'],hint:['(a − b)² = a² − 2ab + b².','(a − b)² = a² − 2ab + b²。'],steps:[
     st(['Which expression equals a² + b²?','哪一個式子等於 a² + b²？'],[O('(a − b)^2 + 2ab',true),O('(a − b)^2 − 2ab',['(a − b)² = a² − 2ab + b², so add 2ab back.','(a − b)² = a² − 2ab + b²，所以要加回 2ab。']),O('(a + b)^2 − 2ab',['True, but we know a − b, not a + b.','正確，但我們知道的是 a − b，不是 a + b。'])],'a^2 + b^2 = (a − b)^2 + 2ab'),
     st(['Choose the answer.','選出答案。'],[O('17',true),O('1',['9 + 8, not 9 − 8.','是 9 + 8，不是 9 − 8。']),O('13',['2ab = 2 × 4 = 8.','2ab = 2 × 4 = 8。']),O('25',['(a − b)² = 3² = 9.','(a − b)² = 3² = 9。'])],'= 3^2 + 2(4) = 17')],
-   work:['a^2 + b^2 = (a − b)^2 + 2ab','= 3^2 + 2(4) = 9 + 8 = 17']}]}];
+   work:['a^2 + b^2 = (a − b)^2 + 2ab','= 3^2 + 2(4) = 9 + 8 = 17']},
+  {q:'a + b = 5,  ab = 6',qt:['Find (a − b)².','求 (a − b)²。'],hint:['(a − b)² = a² + b² − 2ab, and a² + b² = (a + b)² − 2ab.','(a − b)² = a² + b² − 2ab，而 a² + b² = (a + b)² − 2ab。'],steps:[
+    st(['Which expression equals (a − b)²?','哪一個式子等於 (a − b)²？'],[O('(a + b)^2 − 4ab',true),O('(a + b)^2 − 2ab',['That’s only a² + b². (a − b)² needs another −2ab.','這只是 a² + b²。(a − b)² 還要再減 2ab。']),O('(a + b)^2',['(a + b)² has +2ab but (a − b)² has −2ab — they differ by 4ab.','(a + b)² 有 +2ab，(a − b)² 有 −2ab — 相差 4ab。']),O('(a + b)^2 − ab',FB.ONEAB)],'(a − b)^2 = (a + b)^2 − 4ab'),
+    st(['Choose the answer.','選出答案。'],[O('1',true),O('13',['13 is a² + b². Subtract another 2ab = 12.','13 是 a² + b²。還要再減 2ab = 12。']),O('49',['25 − 24, not 25 + 24.','是 25 − 24，不是 25 + 24。']),O('19',['4ab = 4 × 6 = 24.','4ab = 4 × 6 = 24。'])],'= 5^2 − 4(6) = 1')],
+   work:['(a − b)^2 = (a + b)^2 − 4ab','= 5^2 − 4(6) = 25 − 24 = 1']}]}];
 
 const P={lv:0,qi:0,state:{}};
 function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
