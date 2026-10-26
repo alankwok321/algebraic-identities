@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Identities 恆等式</title>
+<title>恆等式 Identities</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Patrick+Hand&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <script>try{document.documentElement.dataset.lang=(localStorage.getItem('ids-lang')==='en'?'en':'zh')}catch(e){document.documentElement.dataset.lang='zh'}</script>
@@ -251,20 +251,17 @@ svg text.it{font-style:italic}
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="toprow"><div class="eyebrow"><span class="t-en">S2 Mathematics · Number &amp; Algebra</span><span class="t-zh">中二數學 · 數與代數</span></div>
-      <div class="lang" role="radiogroup" aria-label="Language 語言">
-      <button role="radio" data-lang="en" aria-checked="false">EN</button>
-      <button role="radio" data-lang="zh" aria-checked="true">中文</button>
-    </div>
-    </div>
-    <h1><span class="t-en">Identities</span><span class="t-zh">恆等式 Identities</span></h1>
-    <div class="ids m" id="topIds"></div>
+    <h1>恆等式 Identities</h1>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Lesson parts">
     <button class="tab" role="tab" data-tab="learn" aria-selected="true"><b>1</b><span class="t-en">Learn</span><span class="t-zh">概念</span></button>
     <button class="tab" role="tab" data-tab="examples" aria-selected="false"><b>2</b><span class="t-en">Worked examples</span><span class="t-zh">例題</span></button>
     <button class="tab" role="tab" data-tab="practice" aria-selected="false"><b>3</b><span class="t-en">Practice</span><span class="t-zh">練習</span></button>
+    <div class="lang" role="radiogroup" aria-label="Language 語言">
+      <button role="radio" data-lang="en" aria-checked="false">EN</button>
+      <button role="radio" data-lang="zh" aria-checked="true">中文</button>
+    </div>
   </nav>
 
   <!-- ================= LEARN ================= -->
@@ -475,7 +472,6 @@ $$('.tab').forEach(t=>t.onclick=()=>{
 
 const IDS=['(«a» + ‹b›)^2 ≡ «a»^2 + 2⟪ab⟫ + ‹b›^2','(«a» − ‹b›)^2 ≡ «a»^2 − 2⟪ab⟫ + ‹b›^2','(«a» + ‹b›)(«a» − ‹b›) ≡ «a»^2 − ‹b›^2'];
 const IDP=['(a + b)^2 ≡ a^2 + 2ab + b^2','(a − b)^2 ≡ a^2 − 2ab + b^2','(a + b)(a − b) ≡ a^2 − b^2'];
-$('#topIds').innerHTML=IDS.map(M).join('');
 $('#idEx').innerHTML=M('2(x + 1) ≡ 2x + 2');
 $('#eqEx').innerHTML=M('2x + 1 = 7');
 
